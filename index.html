@@ -307,7 +307,7 @@
       };
       columns.forEach(c=>{ [...getBucket(c.el).children].forEach(cardEl=>{ const id=+cardEl.dataset.id; const card=cards.find(k=> k.id===id); payload.results.push({ score:c.score, id:card.id, code:card.code, text:card.text }); }); });
 
-      if(!ENDPOINT || ENDPOINT.includes('여기에_AppsScript_URL')){ alert('제출 경로(ENDPOINT)가 설정되지 않았습니다. 코드 상단 ENDPOINT를 Apps Script URL로 교체하세요.'); return; }
+      if(!ENDPOINT || ENDPOINT.includes('https://script.google.com/macros/s/AKfycbxlt7y5J75vhmLT08XMQ-sN-0E3o5-iS8ewS5fN8RIQvTVozyRKverTNcH0Zm70BPBGcA/exec')){ alert('제출 경로(ENDPOINT)가 설정되지 않았습니다. 코드 상단 ENDPOINT를 Apps Script URL로 교체하세요.'); return; }
 
       try{
         await fetch(ENDPOINT, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) });
