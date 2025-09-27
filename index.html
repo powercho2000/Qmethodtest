@@ -6,7 +6,7 @@
     <title>교사의 교육과정 해석을 통한 의미 구성의 코드 유형 탐구(Q방법론)</title>
     <style>
         /* 기존 CSS 코드 */
-        :root{ --bg:#0f172a; --panel:#111827; --card:#1f2937; --muted:#94a3b8; --text:#e5e7eb; --accent:#6366f1; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; }
+        :root{ --bg:#0f172a; --panel:#111827; --card:#1f2937; --muted:#94a3b8; --text:#e5e7eb; --accent:#6366f1; --ok:#22c5e; --warn:#f59e0b; --bad:#ef4444; }
         *{box-sizing:border-box}
         body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Apple SD Gothic Neo,Noto Sans KR,sans-serif}
         header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,rgba(15,23,42,.95),rgba(15,23,42,.6));backdrop-filter:blur(8px);border-bottom:1px solid #1f2937}
@@ -154,46 +154,8 @@
     <!-- 실제 설문 콘텐츠 (토큰 유효성 검증 후 표시) -->
     <div id="survey-main-content" class="hidden">
         <form id="q-sort-form">
-            <div class="page">
-                <div class="row2">
-                    <div>
-                        <label>성별</label>
-                        <select name="gender" required>
-                            <option value="">선택</option>
-                            <option value="male">남성</option>
-                            <option value="female">여성</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>현직 여부</label>
-                        <select name="status" required>
-                            <option value="">선택</option>
-                            <option value="current">현직</option>
-                            <option value="former">현직 아님</option>
-                        </select>
-                    </div>
-                </div>
-                <label>학교급</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item"><input type="checkbox" name="school_level" value="kindergarten" id="kindergarten"><label for="kindergarten">유치원</label></div>
-                    <div class="checkbox-item"><input type="checkbox" name="school_level" value="elementary" id="elementary"><label for="elementary">초등학교</label></div>
-                    <div class="checkbox-item"><input type="checkbox" name="school_level" value="middle" id="middle"><label for="middle">중학교</label></div>
-                    <div class="checkbox-item"><input type="checkbox" name="school_level" value="high" id="high"><label for="high">고등학교</label></div>
-                    <div class="checkbox-item"><input type="checkbox" name="school_level" value="special" id="special"><label for="special">특수학교</label></div>
-                    <div class="checkbox-item"><input type="checkbox" name="school_level" value="other" id="other"><label for="other">기타</label></div>
-                </div>
-
-                <div class="row2">
-                    <div>
-                        <label>연령 (만 나이)</label>
-                        <input type="number" name="age" min="20" max="65" required>
-                    </div>
-                    <div>
-                        <label>교직 경력 (년)</label>
-                        <input type="number" name="career" min="0" required>
-                    </div>
-                </div>
-            </div>
+            <!-- 조경철2577님께서 요청하신 Q-진술문 분류 부분만 남깁니다. -->
+            <!-- 이전에 제가 임의로 추가했던 인구 통계 정보는 제거되었습니다. -->
 
             <div class="page">
                 <h2>Q-진술문 분류 (카드 분류)</h2>
@@ -247,7 +209,7 @@
     <script>
         // 🚨 토큰 관리 (확인 및 사용 처리) Apps Script 웹 앱 URL
         const TOKEN_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzhxw3kVbBBEJhPGAHXBxoL4S7vZKbqwCK5I5PeaeYEDLIO0u1l2VYwTpAMi-ywRem6og/exec";
-        // 🚨 Q방법론 응답 결과 저장 Apps Script 웹 앱 URL
+        // 🚨 Q방법론 응답 결과가 저장되는 Apps Script 웹 앱 URL (doPost 필요)
         const Q_SURVEY_DATA_SUBMIT_URL = "https://script.google.com/macros/s/AKfycbxr3fORzxqC94mS_KAWSeL_NFwzIctrus9ntJSfHjofSUMNqTmH7Pb7fZfqeLoQMRNwdA/exec";
 
         const statusMessageDiv = document.getElementById('status-message');
@@ -263,7 +225,7 @@
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
 
-        // Apps Script 웹 앱으로 요청을 보내고 응답을 받는 함수 (주로 TOKEN_WEB_APP_URL 사용)
+        // Apps Script 웹 앱으로 요청을 보내고 응답을 받는 함수
         async function callAppsScript(url, action, token) {
             const fullUrl = `${url}?action=${action}&token=${encodeURIComponent(token)}`;
             try {
@@ -326,24 +288,9 @@
             const qSortingResults = collectQSortingResults();
             if (!qSortingResults) return; // Q 분류 결과 수집 실패 또는 유효성 검사 실패
 
-            // 일반 폼 데이터 수집
-            const formData = new FormData(qSortForm);
+            // 인구 통계 정보가 없으므로 generalData는 빈 객체로 전송
             const generalData = {};
-            for (let [key, value] of formData.entries()) {
-                if (key === 'school_level') { // 체크박스 처리 (배열로 저장)
-                    if (!generalData[key]) generalData[key] = [];
-                    generalData[key].push(value);
-                } else {
-                    generalData[key] = value;
-                }
-            }
             
-            // 필수 입력 필드 유효성 검사 (Q 분류 결과와 함께 검사)
-            if (!validateGeneralForm(generalData)) {
-                alert('인구 통계 정보가 모두 입력되었는지 확인해 주세요.');
-                return;
-            }
-
             console.log("Q 분류 설문 데이터 제출 시도:", generalData, qSortingResults);
             
             statusMessageDiv.classList.remove('hidden'); // 상태 메시지 영역 다시 보이게
@@ -382,43 +329,17 @@
             }
         });
         
-        // 일반 폼 데이터 유효성 검사
+        // 인구 통계 정보가 없으므로 validateGeneralForm 함수는 필요 없으나,
+        // 혹시 나중에 추가할 경우를 대비하여 주석 처리하거나 제거 가능
+        /*
         function validateGeneralForm(generalData) {
-            // 필수 선택/입력 필드 누락 검사
-            if (!generalData.gender || generalData.gender === '') {
-                return false;
-            }
-            if (!generalData.status || generalData.status === '') {
-                return false;
-            }
-            if (!generalData.age || generalData.age === '' || isNaN(parseInt(generalData.age))) {
-                return false;
-            }
-            if (!generalData.career || generalData.career === '' || isNaN(parseInt(generalData.career))) {
-                return false;
-            }
-            if (!generalData.school_level || generalData.school_level.length === 0) {
-                 return false; // 학교급은 최소 하나 선택되어야 함
-            }
-            // 추가적인 유효성 검사 (예: age, career 범위)
-            if (parseInt(generalData.age) < 20 || parseInt(generalData.age) > 65) {
-                alert('연령은 20세에서 65세 사이로 입력해 주세요.'); return false;
-            }
-            if (parseInt(generalData.career) < 0) {
-                alert('교직 경력은 0년 이상으로 입력해 주세요.'); return false;
-            }
-
+            // 현재 일반 폼 데이터가 없으므로 항상 true 반환
             return true;
         }
-
+        */
 
         // --- Q-Sorting 관련 JavaScript 함수 (initializeQSorting 등) ---
-        // 이 부분은 기존의 Q-Sorting 기능을 담당하는 JavaScript 코드가 위치할 곳입니다.
-        // 예를 들어, 카드를 로드하고 드래그 앤 드롭 기능을 초기화하는 코드들이 여기에 포함되어야 합니다.
         function initializeQSorting() {
-            // 이곳에 Q-Card를 HTML에 로드하고 드래그 앤 드롭 이벤트 리스너를 설정하는
-            // 기존 JavaScript 로직을 그대로 붙여넣어 주세요.
-            // 아래는 임시 Q-Card 로딩 예시입니다. 실제 Q 진술문 데이터로 대체해야 합니다!
             console.log("Q-Sorting 기능 초기화 중...");
             
             const qStatements = [
@@ -636,7 +557,6 @@
         }
 
         // 최초 페이지 로드 시, .cap 요소에 data-initial-cap 속성 추가 (한번만 실행)
-        // 9점 척도 분포 값 그대로 유지합니다.
         document.querySelectorAll('.col-header .cap').forEach(capElement => {
             if (!capElement.hasAttribute('data-initial-cap')) {
                 const initialCapText = capElement.textContent.match(/\d+/); // "2개"에서 "2" 추출
