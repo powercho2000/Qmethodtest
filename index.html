@@ -4,7 +4,153 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>교사의 교육과정 해석을 통한 의미 구성의 코드 유형 탐구(Q방법론)</title>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>교사의 교육과정 해석을 통한 의미 구성의 코드 유형 탐구(Q방법론)</title>
+
 <style>
+/* 🔽 기존 index-fixed-final.html의 CSS 전부 그대로 넣어주세요 */
+</style>
+
+<!-- ✅ 토큰 인증 스크립트 -->
+<script>
+const TOKEN_API_URL = "https://script.google.com/macros/s/AKfycbzhxw3kVbBBEJhPGAHXBxoL4S7vZKbqwCK5I5PeaeYEDLIO0u1l2VYwTpAMi-ywRem6og/exec";
+
+// JSONP 호출
+function jsonp(url, params) {
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Math.random().toString(36).substring(2);
+    params.callback = cb;
+    const qs = Object.keys(params).map(k => `${k}=${encodeURIComponent(params[k])}`).join("&");
+    const script = document.createElement("script");
+    script.src = url + "?" + qs;
+    window[cb] = function(data) {
+      resolve(data);
+      document.body.removeChild(script);
+      delete window[cb];
+    };
+    script.onerror = reject;
+    document.body.appendChild(script);
+  });
+}
+
+function getTokenFromURL(){
+  const u = new URL(location.href);
+  let t = u.searchParams.get('token') || u.searchParams.get('t');
+  if (!t && location.hash){
+    const m = location.hash.match(/token=([^&]+)/);
+    if (m) t = m[1];
+  }
+  return t || '';
+}
+
+async function serverValidateToken(token) {
+  return await jsonp(TOKEN_API_URL, { action: 'checkToken', token });
+}
+async function markTokenUsed(token) {
+  return await jsonp(TOKEN_API_URL, { action: 'markUsed', token });
+}
+
+document.addEventListener('DOMContentLoaded', async ()=>{
+  const token = getTokenFromURL();
+  if (!token) {
+    document.body.innerHTML = "<h2 style='color:red'>⚠ 토큰이 없습니다. 개인 전용 링크로 접속해 주세요.</h2>";
+    return;
+  }
+  const statusBox = document.createElement("div");
+  statusBox.id = "status";
+  statusBox.style.color = "red";
+  statusBox.style.margin = "16px";
+  statusBox.innerText = "토큰 확인 중...";
+  document.body.prepend(statusBox);
+
+  try {
+    const res = await serverValidateToken(token);
+    if (!res.ok && res.status==="invalid") {
+      statusBox.innerText = "잘못된 토큰입니다.";
+      return;
+    }
+    if (res.status==="used") {
+      statusBox.innerText = "이미 사용된 토큰입니다.";
+      return;
+    }
+    if (res.status==="valid") {
+      statusBox.remove();
+      if (typeof initSurvey === "function") initSurvey();  // ✅ 설문 시작
+    }
+  } catch(err) {
+    statusBox.innerText = "토큰 검증 오류: " + err;
+  }
+});
+
+async function finalizeSurvey(){
+  const token = getTokenFromURL();
+  await markTokenUsed(token);
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>교사의 교육과정 해석을 통한 의미 구성의 코드 유형 탐구(Q방법론)</h1>
+    <div class="sub">
+      1단계에서 응답자 정보를 입력하고, 2단계에서 Q진술문 카드를 분포에 맞게 배치한 뒤 제출해 주세요.<br/>
+      제공해주신 개인정보 및 응답 결과는 연구에만 사용되며, 연구 종료 즉시 폐기됩니다.
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Page 1: 응답자 정보 -->
+  <section class="page" id="page1">
+    <!-- 🔽 선생님 원본 응답자 정보 입력 폼 전체 -->
+  </section>
+
+  <!-- Page 2: Q-sort -->
+  <section class="page hidden" id="page2">
+    <!-- 🔽 39개 진술문 Q-sort 보드 + 카드풀 전체 -->
+    <button id="submitBtn">제출</button>
+  </section>
+
+  <!-- Page 3: 제출 완료 -->
+  <section class="page hidden" id="page3">
+    <h2>제출 완료</h2>
+    <p>설문에 참여해 주셔서 감사합니다. 결과가 성공적으로 제출되었습니다.</p>
+  </section>
+</main>
+
+<script>
+// ✅ 설문 초기화
+function initSurvey(){
+  renderColumns();
+  ensureCards();
+  setUniformCardSize();
+  showPage(1);
+
+  document.getElementById('nextBtn').addEventListener('click', ()=> showPage(2));
+  document.getElementById('submitBtn').addEventListener('click', async ()=>{
+    const ok = await submitToSheet(); // 원래 있던 Google Sheets 제출 로직
+    if(ok){
+      await finalizeSurvey();
+      showPage(3);
+    }
+  });
+}
+</script>
+
+<!-- 🔽 선생님 원본 index-fixed-final.html 안의 JS 전체 (STATEMENTS 배열, Q-sort 드래그/드롭, submitToSheet 등) -->
+<script>
+/* 여기에 원본 JS 코드 전부 붙여넣으시면 됩니다 */
+</script>
+
+</body>
+</html>
+
+    <style>
     :root{ --bg:#0f172a; --panel:#111827; --card:#1f2937; --muted:#94a3b8; --text:#e5e7eb; --accent:#6366f1; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; }
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Apple SD Gothic Neo,Noto Sans KR,sans-serif}
