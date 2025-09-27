@@ -699,9 +699,21 @@ const LOCAL_ALLOWED_TOKENS = [
 ];
 
 function getTokenFromURL(){
-  const u = new URL(location.href);
-  // 기본은 token, 이전 호환용으로 t도 허용
-  return u.searchParams.get('token') || u.searchParams.get('t') || '';
+  const href = String(location.href);
+  const u = new URL(href);
+  // 1) 쿼리에서 우선 추출
+  let t = u.searchParams.get('token') || u.searchParams.get('t') || '';
+  if (t) return t;
+  // 2) 해시(#)에 붙여온 경우도 허용: #token=... 또는 #t=...
+  const h = (location.hash || '').replace(/^#/, '');
+  if (h) {
+    const params = new URLSearchParams(h);
+    t = params.get('token') || params.get('t') || '';
+    if (t) return t;
+    // 단일값 형태(#abcd1234)로 온 경우도 허용(영숫자 6~32)
+    if (/^[A-Za-z0-9_-]{6,32}$/.test(h)) return h;
+  }
+  return '';
 }
 
 // JSONP 유틸(Apps Script CORS 회피)
@@ -730,7 +742,7 @@ async function serverValidateToken(token){
 let CURRENT_TOKEN = '';
 async function checkAccess(){
   const gate = document.getElementById('gate');
-  const status = document.getElementById('gateStatus');
+  const status = document.getElementById('gateStatus'); const debug = (msg)=>{ if(status) status.textContent = msg; };
   const app = document.getElementById('appRoot');
   const token = getTokenFromURL();
   CURRENT_TOKEN = token;
