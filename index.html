@@ -42,34 +42,57 @@
     .page{max-width:900px;margin:20px auto;padding:16px;background:var(--panel);border:1px solid #2b3647;border-radius:14px}
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     label{font-size:13px;color:var(--muted);display:block;margin:10px 0 6px}
-    /* 체크박스 라벨 정렬/간격 */
     .checkbox-group{display:flex;flex-direction:column;gap:8px;margin-top:8px}
     .checkbox-item{display:flex;align-items:center;gap:8px}
     .checkbox-item input[type="checkbox"]{width:16px;height:16px;margin:0;vertical-align:middle}
-
 /* Modal styles */
 .modal.hidden { display: none; }
 .modal { position: fixed; inset: 0; z-index: 1000; }
 .modal__overlay { position:absolute; inset:0; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); }
 .modal__content { position:relative; max-width: 720px; margin: 8vh auto; background: var(--panel); border:1px solid #2b3647; border-radius: 12px; padding: 16px; }
-
-  #poolContainer {
-    border-right: 1px dashed #ccc; /* 카드풀과 분포도 사이의 구분선 */
-  }
-  #poolList {
-    display: block;
-    max-height: 400px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 8px;
-    width: 100%;
-    box-sizing: border-box;
-    scrollbar-gutter: stable;
-  }
-  #poolList .card { display: block; width: 100%; margin-bottom: 8px; }
-
+#poolContainer { border-right: 1px dashed #ccc; }
+#poolList { display: block; max-height: 400px; overflow-y: auto; overflow-x: hidden; padding: 8px; width: 100%; box-sizing: border-box; scrollbar-gutter: stable; }
+#poolList .card { display: block; width: 100%; margin-bottom: 8px; }
 #submitBtn { font-size: 18px; font-weight: bold; padding: 14px 22px; background: var(--accent); color: white; border-radius: 12px; border: none; }
 #submitBtn:hover { background: #4338ca; }
+</style>
+<style>
+:root { --card-w: 240px; }
+@media (max-width: 1600px) { :root { --card-w: 220px; } }
+@media (max-width: 1440px) { :root { --card-w: 200px; } }
+@media (max-width: 1280px) { :root { --card-w: 180px; } }
+.page { max-width: 98vw !important; }
+.grid { grid-template-columns: clamp(200px, 18vw, 280px) 1fr !important; }
+.row { grid-template-columns: repeat(9, minmax(var(--card-w), 1fr)) !important; }
+#pool .card { width: var(--card-w); }
+.col .bucket .card { width: 100%; }
+.row { gap: 8px !important; }
+.cols { gap: 8px !important; }
+.modal.hidden { display: none; }
+.modal { position: fixed; inset: 0; z-index: 1000; }
+.modal__overlay { position:absolute; inset:0; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); }
+.modal__content { position:relative; max-width: 720px; margin: 8vh auto; background: var(--panel); border:1px solid #2b3647; border-radius: 12px; padding: 16px; }
+</style>
+<style>
+.help-btn { background: #6366f1; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+.help-btn:hover { background: #4f46e5; transform: scale(1.03); }
+</style>
+<style>
+.board { border: 1px solid #2b3647; border-radius: 12px; padding: 12px; background: var(--panel); }
+</style>
+<style>
+.grid { position: relative; align-items: start; }
+.grid::after { content: ""; position: absolute; top: 0; bottom: 0; left: clamp(200px, 18vw, 280px); border-left: 2px dashed #334155; pointer-events: none; z-index: 1; }
+.board { position: relative; overflow: hidden; background: var(--panel); border: 1px solid #2b3647; border-radius: 12px; padding: 12px; }
+</style>
+<style>
+:root { --card-h: auto; }
+.card { height: var(--card-h); overflow:auto; }
+</style>
+<style>.col-header .tag { color: #ffffff; font-weight: bold; font-size: 15px; }</style>
+<style>
+#page2 aside #pool #poolList { display: block !important; max-height: 50vh !important; min-height: 240px; overflow-y: auto !important; overflow-x: hidden !important; padding: 8px; box-sizing: border-box; scrollbar-gutter: stable; }
+#page2 aside #pool #poolList .card { width: 100% !important; }
 </style>
 </head>
 <body>
@@ -83,13 +106,9 @@
 </div>
 </header>
 <main class="wrap">
-<!-- PAGE 1 -->
 <section class="page" id="page1">
 <h2 style="margin:0 0 12px">1단계: 응답자 정보를 입력하여 주세요.</h2>
-<!-- 토큰 입력 UI 제거: URL 토큰만 사용 -->
 <div class="small" id="tokenStatus" style="margin-top:6px;color:var(--muted)">초대 링크 확인 중입니다…</div>
-
-<!-- 1) 교직 경력 -->
 <div>
 <label for="career">선생님의 교직 경력을 선택하여 주세요. *</label>
 <select id="career" required>
@@ -110,8 +129,6 @@
 <option value="high">고등학교</option>
 </select>
 </div>
-
-<!-- 2) 참여 경험 체크박스 -->
 <div style="margin:14px 0">
 <label>선생님께서는 아래와 같은 작업에 참여하신 적이 있나요? (복수 선택 가능, 전혀 없음 선택 시 다른 항목 선택 불가) *</label>
 <div class="checkbox-group" id="experience-options">
@@ -126,18 +143,14 @@
 <label class="checkbox-item"><input type="checkbox" name="experience" value="none"/> 전혀 없음</label>
 </div>
 </div>
-
-<!-- 3) 면담 의향 -->
 <div style="margin:14px 0">
-<label>연구자의 설문 분석 후 각 코드 유형을 대표하는 선생님들을 대상으로 하는 온라인(줌) 면담이 진행될 수 있습니다. 면담 요청 시 많은 참여 부탁드립니다. 요청 시 면담 참여 가능하십니까? *</label>
+<label>온라인(줌) 면담 요청 시 참여 가능하십니까? *</label>
 <select id="zoomConsent" required>
 <option value="">선택하세요</option>
 <option value="yes">참여할 의향이 있습니다.</option>
 <option value="no">참여할 의향이 없습니다.</option>
 </select>
 </div>
-
-<!-- 4) 이메일 & 전화번호 -->
 <div style="margin-top:14px">
 <label for="email">이메일 *</label>
 <input id="email" type="email" required/>
@@ -146,51 +159,42 @@
 <label for="phone">핸드폰 번호 *(설문 참여 감사 기프티콘 발송용)</label>
 <input id="phone"/>
 </div>
-
-<!-- 5) 연구 동의 -->
 <div class="checkbox-group" style="margin-top:12px">
 <label class="checkbox-item"><input id="consent" type="checkbox"/> 연구 참여에 동의합니다.</label>
 </div>
-
 <div class="toolbar">
   <button id="nextBtn" disabled>초대 링크 확인 중…</button>
 </div>
 </section>
-
-<!-- PAGE 2 (원본 그대로) -->
 <section class="page hidden" id="page2">
-  <h2 style="margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">2단계: 선생님께서 Q진술문 카드를 읽어보신 후, 본인의 생각에 따라 ‘매우 비동의’에서부터 ‘매우 동의’ 사이의 위치에 알맞게 배치해 주세요.<button class="help-btn" id="helpBtn">👉 Q진술문 배치 요령을 반드시 읽어주세요</button></h2>
-  <div class="modal hidden" id="helpModal"> <div class="modal__overlay"></div> <div class="modal__content"> <h3 style="margin-top:0">Q진술문 배치 요령</h3> <ul style="line-height:1.75"> <li>각 카드의 진술은 교사의 국가수준 교육과정 해석과 관련한 교사의 인식, 태도들 담고 있습니다. 카드 배치 전 39개의 진술을 먼저 읽어주세요</li> <li>카드 진술문에 대한 선생님의 동의, 미동의 정도에 따라 카드를 옮겨주시면 됩니다.</li> <li>양 극단에 해당하는 매우 비동의, 매우 동의 하는 진술부터 배치하시고 중립(판단 보류)에 해당하는 진술을 마지막에 배치하시면 응답하기가 편리하실 것입니다.</li> <li>카드 배치를 수정하고 싶으실 경우, 옮기실 카드를 카드 풀로 옮기시면 됩니다. 처음부터 다시 진행하시고 싶으실 경우, 분포 초기화 버튼을 누르시면 됩니다.</li> <li>각 동의/비동의 단계에 배치할 수 있는 카드의 수는 강제 정규 분포가 이루어지도록 설정되어 있으며, 선생님께서 배치하는 카드의 숫자가 보일 것 입니다.</li> </ul> <div style="margin:10px 0 14px"> <div>-4 (매우 비동의) → 2개</div> <div>-3 (비동의) → 3개</div> <div>-2 (다소 비동의) → 4개</div> <div>-1 (약간 비동의) → 6개</div> <div>0 (중립/판단 보류) → 9개</div> <div>1 (약간 동의) → 6개</div> <div>2 (다소 동의) → 4개</div> <div>3 (동의) → 3개</div> <div>4 (매우 동의) → 2개</div> </div> <div style="text-align:right"><button id="helpClose">닫기</button></div> </div></div>
-  <div class="grid">
-    <aside>
-      <h2 style="margin:8px 0 6px;font-size:16px">카드 풀(미배치)</h2>
-      <div class="dropzone" data-score="pool" id="pool">
-        <div class="note">여기에 놓으면 카드가 ‘미배치’ 상태가 됩니다.</div>
-        <div class="bucket" id="poolList"></div>
-      </div>
-      <details style="margin-top:10px">
-        <summary>현재 배치 요약</summary>
-        <div class="small" id="summary" style="margin-top:6px;white-space:pre-wrap"></div>
-      </details>
-      <div class="toolbar" style="margin-top:16px">
-        <button id="resetBtn">분포 초기화</button>
-        <button id="backBtn">뒤로 (응답자 정보)</button>
-        <button id="submitBtn">제출</button>
-      </div>
-    </aside>
-    <section>
-      <h2 style="margin:8px 0 6px;font-size:16px">Q소팅 분포도</h2>
-      <div class="board"><div class="cols">
-        <div class="row" id="row"></div>
-      </div></div>
-    </section>
-  </div>
-  <div class="modal hidden" id="thankModal"><div class="modal__overlay"></div><div class="modal__content"><h3>설문 제출 완료</h3><p>설문에 참여해 주셔서 감사합니다.</p><div style="text-align:right; display:flex; gap:8px; justify-content:flex-end;"><button id="thankClose">닫기</button></div></div></div>
+<h2 style="margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">2단계: Q진술문 카드를 배치해 주세요.<button class="help-btn" id="helpBtn">👉 Q진술문 배치 요령</button></h2>
+<div class="modal hidden" id="helpModal"> <div class="modal__overlay"></div> <div class="modal__content"> <h3 style="margin-top:0">Q진술문 배치 요령</h3> <ul style="line-height:1.75"> <li>39개의 진술을 먼저 읽어주세요.</li> <li>동의/비동의 정도에 따라 카드를 옮겨주세요.</li> <li>각 단계에 배치할 수 있는 카드 수는 정해져 있습니다.</li> </ul> <div style="margin:10px 0 14px"> <div>-4 → 2개</div> <div>-3 → 3개</div> <div>-2 → 4개</div> <div>-1 → 6개</div> <div>0 → 9개</div> <div>1 → 6개</div> <div>2 → 4개</div> <div>3 → 3개</div> <div>4 → 2개</div> </div> <div style="text-align:right"><button id="helpClose">닫기</button></div> </div></div>
+<div class="grid">
+<aside>
+<h2 style="margin:8px 0 6px;font-size:16px">카드 풀(미배치)</h2>
+<div class="dropzone" data-score="pool" id="pool">
+<div class="note">여기에 놓으면 카드가 ‘미배치’ 상태가 됩니다.</div>
+<div class="bucket" id="poolList"></div>
+</div>
+<details style="margin-top:10px">
+<summary>현재 배치 요약</summary>
+<div class="small" id="summary" style="margin-top:6px;white-space:pre-wrap"></div>
+</details>
+<div class="toolbar" style="margin-top:16px"><button id="resetBtn">분포 초기화</button>
+<button id="backBtn">뒤로 (응답자 정보)</button>
+<button id="submitBtn">제출</button>
+</div>
+</aside>
+<section>
+<h2 style="margin:8px 0 6px;font-size:16px">Q소팅 분포도</h2><div class="board"><div class="cols">
+<div class="row" id="row"></div>
+</div></div>
 </section>
+</div>
+<div class="modal hidden" id="thankModal"><div class="modal__overlay"></div><div class="modal__content"><h3>설문 제출 완료</h3><p>설문에 참여해 주셔서 감사합니다.</p><div style="text-align:right; display:flex; gap:8px; justify-content:flex-end;"><button id="thankClose">닫기</button></div></div></div></section>
 </main>
-
 <script>
-// === 카드 높이 균일 ===
+// === Uniform card height ===
 function setUniformCardSize(){
   document.querySelectorAll('.card').forEach(c=>{ c.style.height='auto'; });
   let maxH = 0;
@@ -200,9 +204,8 @@ function setUniformCardSize(){
 }
 window.addEventListener('resize', ()=> setUniformCardSize());
 
-// ===== 분포/카드/문항 =====
-const PRESET_39 = { scores:[-4,-3,-2,-1,0,1,2,3,4], caps:[2,3,4,6,9,6,4,3,2], labels:["-4 (매우 비동의)","-3 (비동의)","-2 (다소 비동의)","-1 (약간 비동의)","0 (중립/판단 보류)","1 (약간 동의)","2 (다소 동의)","3 (동의)","4 (매우 동의)"] };
-const STATEMENTS = [ /* 1..39 그대로 (생략 없이) */
+const PRESET_39 = { scores:[-4,-3,-2,-1,0,1,2,3,4], caps:[2,3,4,6,9,6,4,3,2], labels:[ "-4 (매우 비동의)", "-3 (비동의)", "-2 (다소 비동의)", "-1 (약간 비동의)", "0 (중립/판단 보류)", "1 (약간 동의)", "2 (다소 동의)", "3 (동의)", "4 (매우 동의)" ] };
+const STATEMENTS = [
   {id:1, text:"지리 수업에서 제시하는 학습 목표는 현실 세계의 복잡성을 드러내기보다 단순화된 틀과 구호로 반복된다고 느낀다."},
   {id:2, text:"교사는 학생의 실제 경험보다 국가 수준 교육과정 문서 속 서술이나 교과서 예시에 맞추어 수업을 꾸릴 수밖에 없다고 생각한다."},
   {id:3, text:"국가 수준 교육과정에 제시된 성취기준은 실제 지리 현상을 탐구하게 하기보다 모범 답안을 찾게 만드는 경향이 강하다."},
@@ -243,7 +246,6 @@ const STATEMENTS = [ /* 1..39 그대로 (생략 없이) */
   {id:38, text:"지리 수업은 교사와 학생이 함께 세계 속에서 살아가고 있다는 사실을 드러내는 장이라고 생각한다."},
   {id:39, text:"국가수준 교육과정 및 교과서 지시대로만 진행하는 수업은 교사와 학생의 발전을 막기 때문에, 큰 흐름만 참고해 교사가 새롭게 수업을 구성할 때 교사와 학생 모두 성장할 수 있다."}
 ];
-
 let cards = JSON.parse(JSON.stringify(STATEMENTS));
 let columns = [];
 let selectedCardId = null;
@@ -258,7 +260,7 @@ function showPage(n){
   document.getElementById('page2').classList.toggle('hidden', n!==2);
 }
 
-// ===== 1단계 검증 (토큰 제거: URL 토큰만 사용) =====
+// ===== 1단계 검증 =====
 function validateRespondent(){
   const career = document.getElementById('career').value.trim();
   const phone = document.getElementById('phone').value.trim();
@@ -288,27 +290,29 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const noneOption = document.querySelector('#experience-options input[value="none"]');
   expOptions.forEach(opt=>{
     opt.addEventListener('change', ()=>{
-      if(noneOption.checked){ expOptions.forEach(o=>{ if(o!==noneOption) o.checked=false; }); }
-      else { if(opt!==noneOption) noneOption.checked=false; }
+      if(noneOption.checked){
+        expOptions.forEach(o=>{ if(o!==noneOption) o.checked=false; });
+      } else {
+        if(opt!==noneOption) noneOption.checked=false;
+      }
     });
   });
 });
 
-// ===== 페이지 전환 (URL 토큰 확인 후 진행) =====
+// ===== 페이지 전환 =====
 async function onNext(){
-  // 1) URL 토큰 검증
+  // URL 토큰 확인
   const tok = window.__QSORT_TOKEN__ || '';
   const ok = await checkTokenWithServer(tok);
-  if(!ok) return; // 함수 내부에서 메시지 처리
-  // 2) 응답자 입력 검증
+  if(!ok) return;
+  // 응답자 정보 확인
   if(!validateRespondent()) return;
   showPage(2);
 }
-
 document.getElementById('nextBtn').addEventListener('click', onNext);
 document.getElementById('backBtn')?.addEventListener('click', ()=> showPage(1));
 
-// ===== Q-sort 렌더링 =====
+// ===== Q-sort 보드 렌더링 =====
 function makeEl(tag, cls){ const e=document.createElement(tag); if(cls) e.className=cls; return e; }
 function renderColumns(){
   rowEl.innerHTML=''; columns=[];
@@ -376,17 +380,20 @@ function updateSummary(){
   const poolIds=[...poolList.children].map(e=> e.dataset.id); lines.push(`미배치: ${poolIds.join(', ')||'-'}`); summaryEl.textContent=lines.join('\n');
 }
 
-document.getElementById('reset')?.addEventListener('click', ()=>{ document.querySelectorAll('.bucket').forEach(b=> b.innerHTML=''); ensureCards(); if(columns.length) columns.forEach(capStatus); updateSummary(); });
-
+// 분포 초기화
 document.getElementById('resetBtn')?.addEventListener('click', ()=>{
-  document.querySelectorAll('.col .bucket').forEach(b=>{ [...b.children].forEach(card=> poolList.appendChild(card)); });
+  document.querySelectorAll('.col .bucket').forEach(b=>{
+    [...b.children].forEach(card=> poolList.appendChild(card));
+  });
   refreshAll();
 });
 
 // ========== Apps Script 통신 및 토큰 잠금 로직 ==========
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr3fORzxqC94mS_KAWSeL_NFwzIctrus9ntJSfHjofSUMNqTmH7Pb7fZfqeLoQMRNwdA/exec";
+
 function markTokenUsedLocally(t){ try{ localStorage.setItem(`qsort_token_used_${t}`, '1'); }catch(_){} }
 function isTokenUsedLocally(t){ try{ return localStorage.getItem(`qsort_token_used_${t}`)==='1'; }catch(_){ return false; } }
+
 function setTokenUI(status, msg){
   const st = document.getElementById('tokenStatus');
   const btn = document.getElementById('nextBtn');
@@ -418,22 +425,28 @@ async function checkTokenWithServer(token){
     if(data && data.ok && data.status==='valid'){ setTokenUI('ok','초대 링크 확인 완료'); return true; }
     if(data && data.status==='used'){ setTokenUI('warn','이미 사용된 링크입니다.'); return false; }
     setTokenUI('warn', (data && data.message) || '유효하지 않은 링크입니다.'); return false;
-  }catch(e){ setTokenUI('warn','링크 확인 중 오류가 발생했습니다.'); return false; }
+  }catch(e){
+    setTokenUI('warn','링크 확인 중 오류가 발생했습니다.');
+    return false;
+  }
 }
 
-// URL 토큰을 읽어 자동 검증
+// URL 토큰 자동 확인
 (function(){
   window.__QSORT_TOKEN__ = getTokenFromURL();
   const tok = window.__QSORT_TOKEN__ || '';
   checkTokenWithServer(tok);
 })();
 
-// 제출 버튼
+// 제출
 const submitBtn = document.getElementById('submitBtn');
 submitBtn.addEventListener('click', async ()=>{
   if (SUBMITTING) return;
   const unmet = columns.filter(c=> getBucket(c.el).children.length !== c.cap);
-  if(unmet.length>0){ alert('분포 용량을 정확히 맞춰 주세요.'); return; }
+  if(unmet.length>0){
+    alert('분포 용량을 정확히 맞춰 주세요.');
+    return;
+  }
   const token = window.__QSORT_TOKEN__ || '';
   if(!token){ alert('초대 링크에 토큰이 없습니다. 처음 페이지로 돌아가 주세요.'); showPage(1); return; }
 
@@ -465,9 +478,12 @@ submitBtn.addEventListener('click', async ()=>{
 
   try{
     const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST', mode: 'cors', headers: { 'Content-Type':'application/json' }, body: JSON.stringify(payload)
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify(payload)
     });
-    if(!res.ok) throw new Error('HTTP '+res.status);
+    if(!res.ok){ throw new Error('HTTP '+res.status); }
     const data = await res.json();
     if(data && data.ok){
       const thankModal = document.getElementById('thankModal');
@@ -501,83 +517,125 @@ if (helpBtn && helpModal && helpClose){
 }
 
 // 초기 렌더링
-(function(){
-  // Q-sort UI
-  (function render(){
-    const row = document.getElementById('row');
-    row.innerHTML='';
-    const {scores,caps,labels} = PRESET_39;
-    scores.forEach((score,i)=>{
-      const col = document.createElement('div');
-      col.className='col dropzone';
-      col.dataset.score = score;
-      const head = document.createElement('div'); head.className='col-header';
-      const tag = document.createElement('div'); tag.className='tag'; tag.textContent = labels[i];
-      const cap = document.createElement('div'); cap.className='cap'; cap.innerHTML = `할당 <span class="capnum">${caps[i]}</span> / <span class="usednum">0</span>`;
-      head.append(tag,cap);
-      const bucket = document.createElement('div'); bucket.className='bucket';
-      col.append(head,bucket); row.append(col);
-    });
-  })();
-  // 카드 생성
-  (function ensure(){
-    const pool = document.getElementById('poolList');
-    pool.innerHTML='';
-    STATEMENTS.forEach(s=>{
-      const el = document.createElement('div');
-      el.className='card'; el.draggable=true; el.dataset.id=s.id;
-      el.innerHTML = '<div class="small" style="opacity:.7">#'+s.id+'</div>'+s.text;
-      pool.appendChild(el);
-    });
-  })();
-  // DnD 바인딩
-  (function dnd(){ attachDnD(); refreshAll(); setUniformCardSize(); })();
-  showPage(1);
-})();
+renderColumns(); ensureCards(); setUniformCardSize(); showPage(1);
 
-// Enter로 오작동 방지
+// Enter 키로 재제출 방지
 document.addEventListener('keydown', (e)=>{
   const onPage2 = !document.getElementById('page2').classList.contains('hidden');
   if (onPage2 && e.key === 'Enter') { e.preventDefault(); }
 });
 </script>
-
 <script>
-// 풀 정렬 유지
+// 풀(카드 목록) 항상 오름차순 유지
 (function(){
-  function getCardId(el){ if (!el) return Number.MAX_SAFE_INTEGER; const n = Number(el.dataset?.id||NaN); if(!Number.isNaN(n)) return n; const m=(el.textContent||"").match(/#\s*(\d+)/); return m?Number(m[1]):Number.MAX_SAFE_INTEGER; }
-  let sorting=false; function sortPool(){ if(sorting) return; const pool=document.getElementById('poolList'); if(!pool) return; sorting=true; const nodes=[...pool.children]; nodes.sort((a,b)=>getCardId(a)-getCardId(b)); nodes.forEach(n=>pool.appendChild(n)); sorting=false; }
-  document.addEventListener('DOMContentLoaded', ()=>{ const pool=document.getElementById('poolList'); if(!pool) return; sortPool(); let t=null; const obs=new MutationObserver(()=>{ if(sorting) return; if(t) clearTimeout(t); t=setTimeout(sortPool,0);}); obs.observe(pool,{childList:true}); });
+  function getCardId(el){
+    if (!el) return Number.MAX_SAFE_INTEGER;
+    if (el.dataset && el.dataset.id !== undefined && el.dataset.id !== "") {
+      var n = Number(el.dataset.id);
+      if (!Number.isNaN(n)) return n;
+    }
+    var m = (el.textContent || "").match(/#\s*(\d+)/);
+    return m ? Number(m[1]) : Number.MAX_SAFE_INTEGER;
+  }
+  var sorting = false;
+  function sortPoolAscending(){
+    if (sorting) return;
+    var pool = document.getElementById('poolList');
+    if (!pool) return;
+    sorting = true;
+    var nodes = Array.prototype.slice.call(pool.children);
+    nodes.sort(function(a,b){ return getCardId(a) - getCardId(b); });
+    nodes.forEach(function(n){ pool.appendChild(n); });
+    sorting = false;
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var pool = document.getElementById('poolList');
+    if (!pool) return;
+    sortPoolAscending();
+    var timer = null;
+    var obs = new MutationObserver(function(muts){
+      if (sorting) return;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(sortPoolAscending, 0);
+    });
+    obs.observe(pool, { childList: true });
+
+    if (typeof window.resetDistribution === 'function'){
+      var _reset = window.resetDistribution;
+      window.resetDistribution = function(){
+        var r = _reset.apply(this, arguments);
+        setTimeout(sortPoolAscending, 0);
+        return r;
+      };
+    }
+    if (typeof window.showPage === 'function'){
+      var _show = window.showPage;
+      window.showPage = function(){
+        var r = _show.apply(this, arguments);
+        setTimeout(sortPoolAscending, 0);
+        return r;
+      };
+    }
+  });
 })();
 </script>
-
-<section class="page hidden" id="page3">
-  <h2>제출 완료</h2>
-  <p>설문에 참여해 주셔서 감사합니다. 결과가 성공적으로 제출되었습니다.</p>
-</section>
-
 <script>
 (function(){
-  const m = document.getElementById('thankModal'); if (!m) return;
-  const btn = document.getElementById('thankClose'); const ov = m.querySelector('.modal__overlay');
+  const m = document.getElementById('thankModal');
+  if (!m) return;
+  const btn = document.getElementById('thankClose');
+  const ov = m.querySelector('.modal__overlay');
   function closeModal(){ m.classList.add('hidden'); }
   if (btn) btn.addEventListener('click', closeModal);
   if (ov) ov.addEventListener('click', closeModal);
 })();
 </script>
+<section class="page hidden" id="page3">
+<h2>제출 완료</h2>
+<p>설문에 참여해 주셔서 감사합니다. 결과가 성공적으로 제출되었습니다.</p>
+</section>
 
 <script>
-// URL 토큰 전역 저장 & 초기 상태 반영
+// 제출 완료 모드 전환(버튼 → 완료 페이지)
 (function(){
-  window.__QSORT_TOKEN__ = (function(){
-    try{
-      const url = new URL(location.href);
-      const sp = url.searchParams;
-      let t = (sp.get('token') || sp.get('t') || '').trim();
-      if(!t && url.hash){ const m = url.hash.match(/(?:token|t)=([^&]+)/); if(m) t = decodeURIComponent(m[1]); }
-      return t;
-    }catch(_){ return ''; }
-  })();
+  function bindConfirmToShowPage3(){
+    const confirmBtn = document.getElementById('thankClose') || document.querySelector('#thankModal button');
+    const thankModal = document.getElementById('thankModal');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (!confirmBtn || !thankModal) return false;
+    if (confirmBtn.__boundOK) return true;
+    confirmBtn.__boundOK = true;
+
+    confirmBtn.addEventListener('click', function(){
+      try {
+        thankModal.classList.add('hidden');
+        if (submitBtn){
+          submitBtn.textContent = '제출 완료';
+          submitBtn.disabled = true;
+        }
+        const p1 = document.getElementById('page1');
+        const p2 = document.getElementById('page2');
+        const p3 = document.getElementById('page3');
+        if (p1) p1.classList.add('hidden');
+        if (p2) p2.classList.add('hidden');
+        if (p3) p3.classList.remove('hidden');
+        window.scrollTo(0,0);
+      } catch(e) {
+        console.error('bindConfirmToShowPage3 error:', e);
+      }
+    });
+    return true;
+  }
+
+  let cnt = 0;
+  const intervalID = setInterval(() => {
+    cnt++;
+    if (bindConfirmToShowPage3() || cnt > 20) {
+      clearInterval(intervalID);
+    }
+  }, 300);
 })();
 </script>
 </body>
