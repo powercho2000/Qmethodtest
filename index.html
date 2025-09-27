@@ -45,53 +45,34 @@
     .checkbox-group{display:flex;flex-direction:column;gap:8px;margin-top:8px}
     .checkbox-item{display:flex;align-items:center;gap:8px}
     .checkbox-item input[type="checkbox"]{width:16px;height:16px;margin:0;vertical-align:middle}
+    /* Modal */
     .modal.hidden { display: none; }
     .modal { position: fixed; inset: 0; z-index: 1000; }
     .modal__overlay { position:absolute; inset:0; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); }
     .modal__content { position:relative; max-width: 720px; margin: 8vh auto; background: var(--panel); border:1px solid #2b3647; border-radius: 12px; padding: 16px; }
-  #poolContainer { border-right: 1px dashed #ccc; }
-  #poolList { display: block; max-height: 400px; overflow-y: auto; overflow-x: hidden; padding: 8px; width: 100%; box-sizing: border-box; scrollbar-gutter: stable; }
-  #poolList .card { display: block; width: 100%; margin-bottom: 8px; }
-#submitBtn { font-size: 18px; font-weight: bold; padding: 14px 22px; background: var(--accent); color: white; border-radius: 12px; border: none; }
-#submitBtn:hover { background: #4338ca; }
-</style>
-<style>
-:root { --card-w: 240px; }
-@media (max-width: 1600px) { :root { --card-w: 220px; } }
-@media (max-width: 1440px) { :root { --card-w: 200px; } }
-@media (max-width: 1280px) { :root { --card-w: 180px; } }
-.page { max-width: 98vw !important; }
-.grid { grid-template-columns: clamp(200px, 18vw, 280px) 1fr !important; }
-.row { grid-template-columns: repeat(9, minmax(var(--card-w), 1fr)) !important; }
-#pool .card { width: var(--card-w); }
-.col .bucket .card { width: 100%; }
-.row { gap: 8px !important; }
-.cols { gap: 8px !important; }
-.modal.hidden { display: none; }
-.modal { position: fixed; inset: 0; z-index: 1000; }
-.modal__overlay { position:absolute; inset:0; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); }
-.modal__content { position:relative; max-width: 720px; margin: 8vh auto; background: var(--panel); border:1px solid #2b3647; border-radius: 12px; padding: 16px; }
-</style>
-<style>
-.help-btn { background: #6366f1; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; transition: background 0.2s, transform 0.1s; }
-.help-btn:hover { background: #4f46e5; transform: scale(1.03); }
-</style>
-<style>
-.board { border: 1px solid #2b3647; border-radius: 12px; padding: 12px; background: var(--panel); }
-</style>
-<style>
-.grid { position: relative; align-items: start; }
-.grid::after { content: ""; position: absolute; top: 0; bottom: 0; left: clamp(200px, 18vw, 280px); border-left: 2px dashed #334155; pointer-events: none; z-index: 1; }
-.board { position: relative; overflow: hidden; background: var(--panel); border: 1px solid #2b3647; border-radius: 12px; padding: 12px; }
-</style>
-<style>
-:root { --card-h: auto; }
-.card { height: var(--card-h); overflow:auto; }
-</style>
-<style>.col-header .tag { color: #ffffff; font-weight: bold; font-size: 15px; }</style>
-<style>
-#page2 aside #pool #poolList { display: block !important; max-height: 50vh !important; min-height: 240px; overflow-y: auto !important; overflow-x: hidden !important; padding: 8px; box-sizing: border-box; scrollbar-gutter: stable; }
-#page2 aside #pool #poolList .card { width: 100% !important; }
+    /* Responsive width tuning */
+    :root { --card-w: 240px; }
+    @media (max-width: 1600px) { :root { --card-w: 220px; } }
+    @media (max-width: 1440px) { :root { --card-w: 200px; } }
+    @media (max-width: 1280px) { :root { --card-w: 180px; } }
+    .page { max-width: 98vw !important; }
+    .grid { grid-template-columns: clamp(200px, 18vw, 280px) 1fr !important; }
+    .row { grid-template-columns: repeat(9, minmax(var(--card-w), 1fr)) !important; gap: 8px !important; }
+    .cols { gap: 8px !important; }
+    #pool .card { width: var(--card-w); }
+    .col .bucket .card { width: 100%; }
+    .help-btn { background:#6366f1; color:#fff; font-weight:bold; border:none; border-radius:6px; padding:6px 12px; cursor:pointer; }
+    .help-btn:hover { background:#4f46e5; transform:scale(1.03); }
+    .board { border:1px solid #2b3647; border-radius:12px; padding:12px; background:var(--panel); position:relative; overflow:hidden; }
+    .grid { position: relative; align-items: start; }
+    .grid::after { content:""; position:absolute; top:0; bottom:0; left:clamp(200px, 18vw, 280px); border-left:2px dashed #334155; pointer-events:none; z-index:1; }
+    :root { --card-h: auto; }
+    .card { height: var(--card-h); overflow:auto; }
+    .col-header .tag { color:#ffffff; font-weight:bold; font-size:15px; }
+    #page2 aside #pool #poolList { display:block !important; max-height:50vh !important; min-height:240px; overflow-y:auto !important; overflow-x:hidden !important; padding:8px; box-sizing:border-box; scrollbar-gutter:stable; }
+    #page2 aside #pool #poolList .card { width:100% !important; }
+    #submitBtn { font-size:18px; font-weight:bold; padding:14px 22px; background:var(--accent); color:white; border-radius:12px; border:none; }
+    #submitBtn:hover { background:#4338ca; }
 </style>
 </head>
 <body>
@@ -99,7 +80,7 @@
   <div class="wrap">
     <h1>교사의 교육과정 해석을 통한 의미 구성의 코드 유형 탐구(Q방법론)</h1>
     <div class="sub">
-      1단계에서 응답자 정보를 입력하고, 2단계에서 Q진술문 카드를 분포에 맞게 배치한 뒤 제출부탁드립니다.<br/>
+      1단계에서 응답자 정보를 입력하고, 2단계에서 Q진술문 카드를 분포에 맞게 배치한 뒤 제출해 주세요.<br/>
       제공해주신 개인 정보 및 응답 결과는 연구에만 사용되며, 연구 종료 즉시 폐기됩니다.
     </div>
   </div>
@@ -123,8 +104,7 @@
       </select>
     </div>
 
-    <div>
-      <label for="schoolLevel">선생님께서 현재 근무하고 계신 학교급을 선택하여 주세요. *</label>
+    <div><label for="schoolLevel">선생님께서 현재 근무하고 계신 학교급을 선택하여 주세요. *</label>
       <select id="schoolLevel" required>
         <option value="">선택하세요</option>
         <option value="middle">중학교</option>
@@ -142,13 +122,13 @@
         <label class="checkbox-item"><input type="checkbox" name="experience" value="trainingInstructor"> 지리과 개정 교육과정 선도 교원 연수 강사</label>
         <label class="checkbox-item"><input type="checkbox" name="experience" value="curriculumLeader"> 지리과 개정 교육과정 선도 교원</label>
         <label class="checkbox-item"><input type="checkbox" name="experience" value="plc"> 지리 관련 전문적 교원 학습 공동체 활동(학교 안, 학교 밖 모두 포함)</label>
-        <label class="checkbox-item"><input type="checkbox" name="experience" value="other"> 기타: <input type="text" id="otherExp" placeholder="직접 입력" style="margin-left:6px;flex:1"></label>
+        <label class="checkbox-item"><input type="checkbox" name="experience" value="other"> 기타: <input id="otherExp" placeholder="직접 입력" type="text" style="margin-left:6px;flex:1"></label>
         <label class="checkbox-item"><input type="checkbox" name="experience" value="none"> 전혀 없음</label>
       </div>
     </div>
 
     <div style="margin:14px 0">
-      <label>연구자의 설문 분석 후 각 코드 유형을 대표하는 선생님들을 대상으로 하는 온라인(줌) 면담이 진행될 수 있습니다. 면담 요청 시 많은 참여 부탁드립니다. 요청 시 면담 참여 가능하십니까? *</label>
+      <label>온라인(줌) 면담 참여 의향 *</label>
       <select id="zoomConsent" required>
         <option value="">선택하세요</option>
         <option value="yes">참여할 의향이 있습니다.</option>
@@ -158,12 +138,12 @@
 
     <div style="margin-top:14px">
       <label for="email">이메일 *</label>
-      <input id="email" type="email" required>
+      <input id="email" required type="email"/>
     </div>
 
     <div>
       <label for="phone">핸드폰 번호 *(설문 참여 감사 기프티콘 발송용)</label>
-      <input id="phone">
+      <input id="phone"/>
     </div>
 
     <div class="checkbox-group" style="margin-top:12px">
@@ -179,7 +159,7 @@
   <section class="page hidden" id="page2">
     <h2 style="margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
       2단계: 선생님께서 Q진술문 카드를 읽어보신 후, 본인의 생각에 따라 ‘매우 비동의’에서부터 ‘매우 동의’ 사이의 위치에 알맞게 배치해 주세요.
-      <button id="helpBtn" class="help-btn">👉 Q진술문 배치 요령을 반드시 읽어주세요</button>
+      <button class="help-btn" id="helpBtn">👉 Q진술문 배치 요령을 반드시 읽어주세요</button>
     </h2>
 
     <div class="modal hidden" id="helpModal">
@@ -211,30 +191,29 @@
     <div class="grid">
       <aside>
         <h2 style="margin:8px 0 6px;font-size:16px">카드 풀(미배치)</h2>
-        <div id="pool" class="dropzone" data-score="pool">
+        <div class="dropzone" data-score="pool" id="pool">
           <div class="note">여기에 놓으면 카드가 ‘미배치’ 상태가 됩니다.</div>
-          <div id="poolList" class="bucket"></div>
+          <div class="bucket" id="poolList"></div>
         </div>
-
         <details style="margin-top:10px">
           <summary>현재 배치 요약</summary>
-          <div id="summary" class="small" style="margin-top:6px;white-space:pre-wrap"></div>
+          <div class="small" id="summary" style="margin-top:6px;white-space:pre-wrap"></div>
         </details>
-
         <div class="toolbar" style="margin-top:16px">
           <button id="resetBtn">분포 초기화</button>
           <button id="backBtn">뒤로 (응답자 정보)</button>
           <button id="submitBtn">제출</button>
         </div>
       </aside>
-
       <section>
         <h2 style="margin:8px 0 6px;font-size:16px">Q소팅 분포도</h2>
-        <div class="board"><div class="cols"><div id="row" class="row"></div></div></div>
+        <div class="board">
+          <div class="cols"><div class="row" id="row"></div></div>
+        </div>
       </section>
     </div>
 
-    <div id="thankModal" class="modal hidden">
+    <div class="modal hidden" id="thankModal">
       <div class="modal__overlay"></div>
       <div class="modal__content">
         <h3>설문 제출 완료</h3>
@@ -247,38 +226,64 @@
   </section>
 </main>
 
-<!-- Token check (added; UI 그대로) -->
+<!-- ========== 토큰 검증 전용 스크립트 (토큰 입력칸 없음) ========== -->
 <script>
+// 선생님이 배포한 토큰 API 주소(최신본)
+const TOKEN_API_URL = "https://script.google.com/macros/s/AKfycbzhxw3kVbBBEJhPGAHXBxoL4S7vZKbqwCK5I5PeaeYEDLIO0u1l2VYwTpAMi-ywRem6og/exec";
+
 (function(){
-  const TOKEN_API_URL = "https://script.google.com/macros/s/AKfycbzhxw3kVbBBEJhPGAHXBxoL4S7vZKbqwCK5I5PeaeYEDLIO0u1l2VYwTpAMi-ywRem6og/exec";
-  function getToken(){ try{ const u=new URL(location.href); return (u.searchParams.get('token')||u.searchParams.get('t')||'').trim(); }catch(_){ return ''; } }
-  async function verify(){
-    const t=getToken();
-    if(!t){ window.__TOKEN_VALID__=false; window.__TOKEN_STATUS__='missing'; return; }
+  function getTokenFromURL(){
     try{
-      const qs=new URLSearchParams({action:'checkToken',token:t});
-      const r=await fetch(`${TOKEN_API_URL}?${qs}`,{method:'GET',mode:'cors'});
-      if(!r.ok){ window.__TOKEN_VALID__=false; window.__TOKEN_STATUS__='error'; return; }
-      const d=await r.json().catch(()=>({}));
-      if(d&&d.ok&&d.status==='valid'){ window.__TOKEN_VALID__=true; window.__TOKEN_STATUS__='valid'; }
-      else if(d&&d.status==='used'){ window.__TOKEN_VALID__=false; window.__TOKEN_STATUS__='used'; }
-      else{ window.__TOKEN_VALID__=false; window.__TOKEN_STATUS__='invalid'; }
-    }catch(_){ window.__TOKEN_VALID__=false; window.__TOKEN_STATUS__='error'; }
+      const u = new URL(window.location.href);
+      return (u.searchParams.get('token') || u.searchParams.get('t') || '').trim();
+    }catch(_){ return ''; }
   }
-  window.__TOKEN_VALID__=false; window.__TOKEN_STATUS__='checking'; verify();
-  window.__ensureTokenOK__=async function(){
-    if(window.__TOKEN_STATUS__==='checking'){ await new Promise(r=>setTimeout(r,200)); }
-    if(window.__TOKEN_VALID__===true) return true;
-    const st=window.__TOKEN_STATUS__;
-    if(st==='missing') alert('초대 메일로 받은 개인 전용 링크로 접속해 주세요. (토큰 없음)');
-    else if(st==='used') alert('이미 사용된 링크입니다. 설문을 다시 진행할 수 없습니다.');
-    else if(st==='invalid') alert('유효하지 않은 링크입니다. 초대 메일의 링크를 다시 확인해 주세요.');
-    else alert('링크 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+  async function verifyTokenOnce(){
+    const t = getTokenFromURL();
+    window.__TOKEN_VALUE__ = t;
+    if(!t){ window.__TOKEN_VALID__ = false; window.__TOKEN_STATUS__ = 'missing'; return; }
+    try{
+      const qs = new URLSearchParams({ action:'checkToken', token:t });
+      const res = await fetch(`${TOKEN_API_URL}?${qs}`, { method:'GET', mode:'cors' });
+      if(!res.ok){ window.__TOKEN_VALID__ = false; window.__TOKEN_STATUS__ = 'error'; return; }
+      const data = await res.json().catch(()=>({}));
+      if (data && data.ok && data.status === 'valid'){
+        window.__TOKEN_VALID__ = true; window.__TOKEN_STATUS__ = 'valid';
+      } else if (data && data.status === 'used'){
+        window.__TOKEN_VALID__ = false; window.__TOKEN_STATUS__ = 'used';
+      } else {
+        window.__TOKEN_VALID__ = false; window.__TOKEN_STATUS__ = 'invalid';
+      }
+    }catch(e){
+      window.__TOKEN_VALID__ = false; window.__TOKEN_STATUS__ = 'error';
+    }
+  }
+  window.__TOKEN_VALID__ = false;
+  window.__TOKEN_STATUS__ = 'checking';
+  verifyTokenOnce();
+
+  // 다음 버튼에서 호출
+  window.__ensureTokenOK__ = async function(){
+    if (window.__TOKEN_STATUS__ === 'checking'){
+      await new Promise(r=> setTimeout(r, 200));
+    }
+    if (window.__TOKEN_VALID__ === true) return true;
+    const st = window.__TOKEN_STATUS__;
+    if (st === 'missing'){
+      alert('초대 메일로 받은 개인 전용 링크로 접속해 주세요. (토큰 없음)');
+    } else if (st === 'used'){
+      alert('이미 사용된 링크입니다. 설문을 다시 진행할 수 없습니다.');
+    } else if (st === 'invalid'){
+      alert('유효하지 않은 링크입니다. 초대 메일의 링크를 다시 확인해 주세요.');
+    } else {
+      alert('링크 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    }
     return false;
   };
 })();
 </script>
 
+<!-- ========== 기존 보드/로직(요약) + 제출 시 markUsed 호출만 추가 ========== -->
 <script>
 // === Uniform card height ===
 function setUniformCardSize(){
@@ -290,52 +295,58 @@ function setUniformCardSize(){
 }
 window.addEventListener('resize', ()=> setUniformCardSize());
 
+// ===== 39문항 분포 설정 =====
 const PRESET_39 = {
   scores:[-4,-3,-2,-1,0,1,2,3,4],
-  caps:[2,3,4,6,9,6,4,3,2],
-  labels:["-4 (매우 비동의)","-3 (비동의)","-2 (다소 비동의)","-1 (약간 비동의)","0 (중립/판단 보류)","1 (약간 동의)","2 (다소 동의)","3 (동의)","4 (매우 동의)"]
+  caps:[  2,  3,  4,  6, 9, 6, 4, 3, 2],
+  labels:[
+    "-4 (매우 비동의)","-3 (비동의)","-2 (다소 비동의)","-1 (약간 비동의)",
+    "0 (중립/판단 보류)","1 (약간 동의)","2 (다소 동의)","3 (동의)","4 (매우 동의)"
+  ]
 };
-const STATEMENTS = Array.from({length:39}, (_,i)=>({id:i+1, text:document.currentScript && document.currentScript.dataset && document.currentScript.dataset.stub==="1" ? "" : [
-"지리 수업에서 제시하는 학습 목표는 현실 세계의 복잡성을 드러내기보다 단순화된 틀과 구호로 반복된다고 느낀다.",
-"교사는 학생의 실제 경험보다 국가 수준 교육과정 문서 속 서술이나 교과서 예시에 맞추어 수업을 꾸릴 수밖에 없다고 생각한다.",
-"국가 수준 교육과정에 제시된 성취기준은 실제 지리 현상을 탐구하게 하기보다 모범 답안을 찾게 만드는 경향이 강하다.",
-"학생들의 학습 활동 참여는 자율적인 탐구라기보다 국가 수준 교육과정 문서가 요구하는 형식적 수행으로 흐른다고 본다.",
-"지리 교육에서 강조하는 학습 목표, 개념들은 현실의 복잡한 문제나 갈등을 담지 못하고, 국가 수준 교육과정 문서, 교과서 속에서 정해진 문구처럼 형식적으로 다뤄진다.",
-"교사의 교육과정 해석은 학생과 교사가 맞닥뜨리는 구체적이고 복잡한 지리적 삶의 맥락보다는, 국가 수준 교육과정 문서와 평가 관련 지침에 더 충실해질 수밖에 없다고 생각한다.",
-"지리적 문제 및 쟁점은 복잡한 현실 문제로 다뤄지기보다 단순한 사례와 도식으로만 제시되어 간단하게 다뤄진다고 본다.",
-"국가 수준의 교육과정의 지시는 교사의 창의적 해석보다는 획일적인 활동으로 귀결되는 경우가 많다.",
-"학생들은 실제 지역 사회보다 교과서 안에서 정형화된 지리적 개념 및 탐구를 배우는 데 익숙해진다고 느낀다.",
-"국가수준 교육과정 문서에서 반복적으로 강조되는 용어나 개념은 실제 지리 현상과 연결되기보다, 국가수준 교육과정 문서와 교과서 안에서 정해진 문구와 예시로만 반복된다.",
-"지리 교육은 종종 학생의 실제 이해보다, 국가수준 교육과정이 정해 놓은 성취기준이나 평가 기준을 충족하는 것에 더 치중하게 된다.",
-"국가수준 성취기준이 제시하는 목표들은 학생들의 삶과 무관한 채 ‘해야 하는 것’으로만 받아들여질 위험이 크다고 본다.",
-"학생의 학습 성취 여부가 루브릭(채점 기준표)과 같은 표준화된 평가 지표로 측정될 때, 학생은 학습 보다 평가 지표 맞추기에 집중하게 된다고 본다.",
-"국가수준 교육과정에 제시된 지리 학습의 목표들은 정해진 답으로만 읽히지 않고, 교사가 처한 지역적 맥락이나 학생들의 삶에 따라 달리 해석될 수 있다고 본다.",
-"국가수준 교육과정에 제시된 성취기준 달성을 위해 학생에게 제공하는 학습 경험은 교과서에서 제시된 활동 뿐만 아니라, 주변 지역의 지리 현상이나 학생 경험으로 자유롭게 확장할 수 있다고 생각한다.",
-"국가가 정한 지리 교육의 내용과 방법과 같은 틀은 분명 문서로서 존재하지만, 교사가 현장에서 재구성하면서 새로운 수업 흐름을 만들어낼 수 있는 여지가 충분하다고 본다.",
-"국가수준 교육과정 문서에서 제시하는 지리 수업의 목표, 내용, 방법들은 교사와 학생이 함께 실험해보고 변형할 수 있는 열린 지점으로 이해된다.",
-"정형화된 성취기준, 학습 목표조차도 교사의 선택에 따라 다른 모습으로 구현될 수 있다는 점이 중요하다고 본다.",
-"국가수준 교육과정 문서에 없는 지리적 주제를 다루더라도 학생 삶과 연결된다면 충분히 교육과정의 의미 안에 포함된다고 여긴다.",
-"국가수준 교육과정의 지침은 지리 교사에게 통제의 장치이면서도 동시에 창의적 해석의 가능성을 남겨둔다고 생각한다.",
-"교사의 교육과정 해석은 국가수준 교육과정 문서에 적힌 기준을 그대로 따르는 것이 아니라, 이를 학생들의 경험 세계와 연결하는 것이라고 본다.",
-"국가수준 교육과정 문서에서 제시하는 교수․학습 및 평가 방향을 완전히 따르지 않더라도, 교사가 학생과 지역 상황 맞게 지리 수업을 자율적으로 재구성하여 진행하는 것은 정당하다고 생각한다.",
-"국가수준 교육과정은 지리 교사에게 단일한 길이 아니라 여러 갈래의 길을 열어주는 출발점으로 읽힌다.",
-"교사의 교육과정 해석과 실천은 언제나 문서에 적힌 지시보다 더 풍부하고 다양할 수 있다.",
-"지리 수업에서는 국가수준의 성취기준보다 학생과 지역의 특수성을 먼저 고려해야 한다고 본다.",
-"지리 수업의 의미는 교사, 학생, 교실 환경, 지역 자료가 어떻게 어울리느냐에 따라 달라지기 때문에 국가수준 교육과정 및 교과에서 제시한 학습 순서도 현장에 맞게 재구성될 수 있다고 본다.",
-"국가수준 교육과정에서 제시된 지리 교육의 목표들은 단순한 지식 전달을 넘어, 교사 자신이 어떤 존재인지 성찰하게 만드는 계기로 읽힌다.",
-"학생들이 배우는 지리적 지식, 기능, 가치․태도 등은 결국 자기 삶을 돌아보게 하는 물음이 되어야 한다고 생각한다.",
-"지리 수업에서 제시되는 학습 목표들은 객관적 지리적 사실의 나열이 아니라, 학생이 어떻게 세계 속에 살아가고 있는지를 묻는 계기라고 본다.",
-"교사의 교육과정 해석은 학생의 생활세계와 연결될 때 비로소 교육적 의미를 가진다고 느낀다.",
-"지리 교육은 교사와 학생이 함께 세계와 자기 자신을 성찰하는 장으로 기능해야 한다고 생각한다.",
-"국가가 제시하는 지리 교육의 목표는 학생이 자기 가능성을 발견하는 기회로 전환될 수 있다고 본다.",
-"국가수준 교육과정 문서가 말하는 성취기준들은 단순히 외워야 할 지식이 아니라, 삶의 문제와 연결될 때 의미가 있다고 본다.",
-"학생은 지리를 통해 자기 삶과 세계를 질문하고 대답할 수 있어야 한다고 여긴다.",
-"지리 교육에서 중요한 것은 사실의 축적보다 자신의 경험 속에서 의미를 발견하는 것이라고 생각한다.",
-"교사는 학생이 수동적으로 배우는 존재가 아니라, 자기 삶을 주체적으로 살아가는 존재가 되도록 돕는다고 본다.",
-"국가수준 교육과정 문서를 읽는 일은 교사에게도 자기 존재를 새롭게 이해하는 기회가 된다.",
-"지리 수업은 교사와 학생이 함께 세계 속에서 살아가고 있다는 사실을 드러내는 장이라고 생각한다.",
-"국가수준 교육과정 및 교과서 지시대로만 진행하는 수업은 교사와 학생의 발전을 막기 때문에, 큰 흐름만 참고해 교사가 새롭게 수업을 구성할 때 교사와 학생 모두 성장할 수 있다."
-][i]}));
+
+// ===== 진술문(39개) =====
+const STATEMENTS = [
+  {id:1, text:"지리 수업에서 제시하는 학습 목표는 현실 세계의 복잡성을 드러내기보다 단순화된 틀과 구호로 반복된다고 느낀다."},
+  {id:2, text:"교사는 학생의 실제 경험보다 국가 수준 교육과정 문서 속 서술이나 교과서 예시에 맞추어 수업을 꾸릴 수밖에 없다고 생각한다."},
+  {id:3, text:"국가 수준 교육과정에 제시된 성취기준은 실제 지리 현상을 탐구하게 하기보다 모범 답안을 찾게 만드는 경향이 강하다."},
+  {id:4, text:"학생들의 학습 활동 참여는 자율적인 탐구라기보다 국가 수준 교육과정 문서가 요구하는 형식적 수행으로 흐른다고 본다."},
+  {id:5, text:"지리 교육에서 강조하는 학습 목표, 개념들은 현실의 복잡한 문제나 갈등을 담지 못하고, 국가 수준 교육과정 문서, 교과서 속에서 정해진 문구처럼 형식적으로 다뤄진다."},
+  {id:6, text:"교사의 교육과정 해석은 학생과 교사가 맞닥뜨리는 구체적이고 복잡한 지리적 삶의 맥락보다는, 국가 수준 교육과정 문서와 평가 관련 지침에 더 충실해질 수밖에 없다고 생각한다."},
+  {id:7, text:"지리적 문제 및 쟁점은 복잡한 현실 문제로 다뤄지기보다 단순한 사례와 도식으로만 제시되어 간단하게 다뤄진다고 본다."},
+  {id:8, text:"국가 수준의 교육과정의 지시는 교사의 창의적 해석보다는 획일적인 활동으로 귀결되는 경우가 많다."},
+  {id:9, text:"학생들은 실제 지역 사회보다 교과서 안에서 정형화된 지리적 개념 및 탐구를 배우는 데 익숙해진다고 느낀다."},
+  {id:10, text:"국가수준 교육과정 문서에서 반복적으로 강조되는 용어나 개념은 실제 지리 현상과 연결되기보다, 국가수준 교육과정 문서와 교과서 안에서 정해진 문구와 예시로만 반복된다."},
+  {id:11, text:"지리 교육은 종종 학생의 실제 이해보다, 국가수준 교육과정이 정해 놓은 성취기준이나 평가 기준을 충족하는 것에 더 치중하게 된다."},
+  {id:12, text:"국가수준 성취기준이 제시하는 목표들은 학생들의 삶과 무관한 채 ‘해야 하는 것’으로만 받아들여질 위험이 크다고 본다."},
+  {id:13, text:"학생의 학습 성취 여부가 루브릭(채점 기준표)과 같은 표준화된 평가 지표로 측정될 때, 학생은 학습 보다 평가 지표 맞추기에 집중하게 된다고 본다."},
+  {id:14, text:"국가수준 교육과정에 제시된 지리 학습의 목표들은 정해진 답으로만 읽히지 않고, 교사가 처한 지역적 맥락이나 학생들의 삶에 따라 달리 해석될 수 있다고 본다."},
+  {id:15, text:"국가수준 교육과정에 제시된 성취기준 달성을 위해 학생에게 제공하는 학습 경험은 교과서에서 제시된 활동 뿐만 아니라, 주변 지역의 지리 현상이나 학생 경험으로 자유롭게 확장할 수 있다고 생각한다."},
+  {id:16, text:"국가가 정한 지리 교육의 내용과 방법과 같은 틀은 분명 문서로서 존재하지만, 교사가 현장에서 재구성하면서 새로운 수업 흐름을 만들어낼 수 있는 여지가 충분하다고 본다."},
+  {id:17, text:"국가수준 교육과정 문서에서 제시하는 지리 수업의 목표, 내용, 방법들은 교사와 학생이 함께 실험해보고 변형할 수 있는 열린 지점으로 이해된다."},
+  {id:18, text:"정형화된 성취기준, 학습 목표조차도 교사의 선택에 따라 다른 모습으로 구현될 수 있다는 점이 중요하다고 본다."},
+  {id:19, text:"국가수준 교육과정 문서에 없는 지리적 주제를 다루더라도 학생 삶과 연결된다면 충분히 교육과정의 의미 안에 포함된다고 여긴다."},
+  {id:20, text:"국가수준 교육과정의 지침은 지리 교사에게 통제의 장치이면서도 동시에 창의적 해석의 가능성을 남겨둔다고 생각한다."},
+  {id:21, text:"교사의 교육과정 해석은 국가수준 교육과정 문서에 적힌 기준을 그대로 따르는 것이 아니라, 이를 학생들의 경험 세계와 연결하는 것이라고 본다."},
+  {id:22, text:"국가수준 교육과정 문서에서 제시하는 교수․학습 및 평가 방향을 완전히 따르지 않더라도, 교사가 학생과 지역 상황 맞게 지리 수업을 자율적으로 재구성하여 진행하는 것은 정당하다고 생각한다."},
+  {id:23, text:"국가수준 교육과정은 지리 교사에게 단일한 길이 아니라 여러 갈래의 길을 열어주는 출발점으로 읽힌다."},
+  {id:24, text:"교사의 교육과정 해석과 실천은 언제나 문서에 적힌 지시보다 더 풍부하고 다양할 수 있다."},
+  {id:25, text:"지리 수업에서는 국가수준의 성취기준보다 학생과 지역의 특수성을 먼저 고려해야 한다고 본다."},
+  {id:26, text:"지리 수업의 의미는 교사, 학생, 교실 환경, 지역 자료가 어떻게 어울리느냐에 따라 달라지기 때문에 국가수준 교육과정 및 교과에서 제시한 학습 순서도 현장에 맞게 재구성될 수 있다고 본다."},
+  {id:27, text:"국가수준 교육과정에서 제시된 지리 교육의 목표들은 단순한 지식 전달을 넘어, 교사 자신이 어떤 존재인지 성찰하게 만드는 계기로 읽힌다."},
+  {id:28, text:"학생들이 배우는 지리적 지식, 기능, 가치․태도 등은 결국 자기 삶을 돌아보게 하는 물음이 되어야 한다고 생각한다."},
+  {id:29, text:"지리 수업에서 제시되는 학습 목표들은 객관적 지리적 사실의 나열이 아니라, 학생이 어떻게 세계 속에 살아가고 있는지를 묻는 계기라고 본다."},
+  {id:30, text:"교사의 교육과정 해석은 학생의 생활세계와 연결될 때 비로소 교육적 의미를 가진다고 느낀다."},
+  {id:31, text:"지리 교육은 교사와 학생이 함께 세계와 자기 자신을 성찰하는 장으로 기능해야 한다고 생각한다."},
+  {id:32, text:"국가가 제시하는 지리 교육의 목표는 학생이 자기 가능성을 발견하는 기회로 전환될 수 있다고 본다."},
+  {id:33, text:"국가수준 교육과정 문서가 말하는 성취기준들은 단순히 외워야 할 지식이 아니라, 삶의 문제와 연결될 때 의미가 있다고 본다."},
+  {id:34, text:"학생은 지리를 통해 자기 삶과 세계를 질문하고 대답할 수 있어야 한다고 여긴다."},
+  {id:35, text:"지리 교육에서 중요한 것은 사실의 축적보다 자신의 경험 속에서 의미를 발견하는 것이라고 생각한다."},
+  {id:36, text:"교사는 학생이 수동적으로 배우는 존재가 아니라, 자기 삶을 주체적으로 살아가는 존재가 되도록 돕는다고 본다."},
+  {id:37, text:"국가수준 교육과정 문서를 읽는 일은 교사에게도 자기 존재를 새롭게 이해하는 기회가 된다."},
+  {id:38, text:"지리 수업은 교사와 학생이 함께 세계 속에서 살아가고 있다는 사실을 드러내는 장이라고 생각한다."},
+  {id:39, text:"국가수준 교육과정 및 교과서 지시대로만 진행하는 수업은 교사와 학생의 발전을 막기 때문에, 큰 흐름만 참고해 교사가 새롭게 수업을 구성할 때 교사와 학생 모두 성장할 수 있다."}
+];
 
 let cards = JSON.parse(JSON.stringify(STATEMENTS));
 let columns = [];
@@ -351,20 +362,20 @@ function showPage(n){
   document.getElementById('page2').classList.toggle('hidden', n!==2);
 }
 
-// validation (unchanged UI)
+// 1단계 검증(필수만)
 function validateRespondent(){
   const career = document.getElementById('career').value.trim();
-  const phone = document.getElementById('phone').value.trim();
   const schoolLevel = document.getElementById('schoolLevel').value.trim();
-  if(!schoolLevel){ alert('현재 근무하고 계신 학교급을 선택하세요.'); return false; }
-  const email = document.getElementById('email').value.trim();
   const zoomConsent = document.getElementById('zoomConsent').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
   const consent = document.getElementById('consent').checked;
   const checked = [...document.querySelectorAll('#experience-options input[name="experience"]:checked')];
   const otherChecked = checked.some(i=> i.value==='other');
   const otherText = (document.getElementById('otherExp')||{}).value ? document.getElementById('otherExp').value.trim() : '';
 
   if(!career){ alert('교직 경력을 선택하세요.'); return false; }
+  if(!schoolLevel){ alert('현재 근무하고 계신 학교급을 선택하세요.'); return false; }
   if(checked.length===0){ alert('작업 참여 경험을 최소 1개 선택하세요.'); return false; }
   if(checked.some(i=> i.value==='none') && checked.length>1){ alert('"전혀 없음"을 선택한 경우 다른 항목은 선택할 수 없습니다.'); return false; }
   if(otherChecked && !otherText){ alert('기타를 선택하셨다면 내용을 입력해 주세요.'); return false; }
@@ -375,26 +386,30 @@ function validateRespondent(){
   return true;
 }
 
-// none checkbox rule
+// 체크박스: '전혀 없음' 단독 선택
 document.addEventListener('DOMContentLoaded', ()=>{
   const expOptions = document.querySelectorAll('#experience-options input[type="checkbox"]');
   const noneOption = document.querySelector('#experience-options input[value="none"]');
   expOptions.forEach(opt=>{
     opt.addEventListener('change', ()=>{
-      if(noneOption.checked){ expOptions.forEach(o=>{ if(o!==noneOption) o.checked=false; }); }
-      else { if(opt!==noneOption) noneOption.checked=false; }
+      if(noneOption.checked){
+        expOptions.forEach(o=>{ if(o!==noneOption) o.checked=false; });
+      } else {
+        if(opt!==noneOption) noneOption.checked=false;
+      }
     });
   });
 });
 
-// next/back
+// 페이지 전환
 document.getElementById('nextBtn').addEventListener('click', async ()=>{
-  if (!(await window.__ensureTokenOK__())) return;
-  if (validateRespondent()) showPage(2);
+  if (!(await window.__ensureTokenOK__())) return; // ← 토큰 검증
+  if(!validateRespondent()) return;
+  showPage(2);
 });
 document.getElementById('backBtn')?.addEventListener('click', ()=> showPage(1));
 
-// board render
+// 보드 렌더링
 function makeEl(tag, cls){ const e=document.createElement(tag); if(cls) e.className=cls; return e; }
 function renderColumns(){
   rowEl.innerHTML=''; columns=[];
@@ -458,33 +473,94 @@ function moveCardTo(id, zone){
 function updateSummary(){
   if(!summaryEl) return;
   const lines=[]; columns.forEach(c=>{ const b=getBucket(c.el); const ids=b?[...b.children].map(e=> e.dataset.id):[]; lines.push(`${c.score}: ${ids.join(', ')||'-'}`); });
-  const poolIds=[...poolList.children].map(e=> e.dataset.id); lines.push(`미배치: ${poolIds.join(', ')||'-'}`);
-  summaryEl.textContent=lines.join('\n');
+  const poolIds=[...poolList.children].map(e=> e.dataset.id); lines.push(`미배치: ${poolIds.join(', ')||'-'}`); summaryEl.textContent=lines.join('\n');
 }
-
-// reset
 document.getElementById('resetBtn')?.addEventListener('click', ()=>{
-  document.querySelectorAll('.col .bucket').forEach(b=>{ [...b.children].forEach(card=> poolList.appendChild(card)); });
+  document.querySelectorAll('.col .bucket').forEach(b=>{
+    [...b.children].forEach(card=> poolList.appendChild(card));
+  });
   refreshAll();
 });
 
-// submit (unchanged UI)
-document.getElementById('submitBtn').addEventListener('click', ()=>{
-  if (SUBMITTING) return;
-  SUBMITTING = true;
+// 초기 렌더링
+renderColumns(); ensureCards(); setUniformCardSize(); showPage(1);
+
+// Enter 방지
+document.addEventListener('keydown', (e)=>{
+  const onPage2 = !document.getElementById('page2').classList.contains('hidden');
+  if (onPage2 && e.key === 'Enter') { e.preventDefault(); }
+});
+</script>
+
+<!-- ========== 제출 및 토큰 사용처리 ========== -->
+<script>
+// 제출을 받는 Apps Script Web App URL (기존 사용하시던 제출용 스크립트 주소를 넣으세요)
+const APPS_SCRIPT_SUBMIT_URL = "https://script.google.com/macros/s/AKfycbzhxw3kVbBBEJhPGAHXBxoL4S7vZKbqwCK5I5PeaeYEDLIO0u1l2VYwTpAMi-ywRem6og/exec"; // 필요 시 교체
+
+function collectQsort(){
+  const results = [];
+  if (Array.isArray(columns)){
+    columns.forEach(c => {
+      const b = (c.el && c.el.querySelector('.bucket')) || null;
+      const nodes = b ? Array.from(b.children) : [];
+      nodes.forEach(node => {
+        const id = Number(node.dataset.id);
+        if (!Number.isNaN(id)) results.push({ id, score: Number(c.score) });
+      });
+    });
+  }
+  return results;
+}
+
+async function submitToSheet(){
   const submitBtn = document.getElementById('submitBtn');
   if (submitBtn){ submitBtn.setAttribute('disabled','true'); submitBtn.textContent = '제출 중...'; }
-  const unmet = columns.filter(c=> getBucket(c.el).children.length !== c.cap);
+
+  const unmet = columns.filter(c=> (c.el.querySelector('.bucket')?.children.length || 0) !== c.cap);
   if(unmet.length>0){
     alert('분포 용량을 정확히 맞춰 주세요.');
-    SUBMITTING = false;
     if (submitBtn){ submitBtn.removeAttribute('disabled'); submitBtn.textContent = '제출'; }
     return;
   }
-  submitToSheet();
-});
 
-// help modal
+  const payload = {
+    career: (document.getElementById('career')?.value || '').trim(),
+    schoolLevel: (document.getElementById('schoolLevel')?.value || '').trim(),
+    experience: Array.from(document.querySelectorAll('input[name="experience"]:checked')).map(el => el.value),
+    experienceOther: (document.getElementById('otherExp')?.value || '').trim(),
+    zoomConsent: (document.getElementById('zoomConsent')?.value || '').trim(),
+    email: (document.getElementById('email')?.value || '').trim(),
+    phone: (document.getElementById('phone')?.value || '').trim(),
+    qsort: collectQsort()
+  };
+
+  try{
+    // 제출
+    await fetch(APPS_SCRIPT_SUBMIT_URL, {
+      method: 'POST',
+      mode: 'no-cors', // 응답 본문 읽지 않음(성공 가정)
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    // 제출 성공 가정 → 토큰 사용 처리
+    const t = window.__TOKEN_VALUE__ || '';
+    if (t){
+      fetch(`${TOKEN_API_URL}?action=markUsed&token=${encodeURIComponent(t)}`, { method:'GET', mode:'cors' }).catch(()=>{});
+    }
+
+    const thankModal = document.getElementById('thankModal');
+    if (thankModal) thankModal.classList.remove('hidden');
+  }catch(err){
+    alert('네트워크/서버 오류로 제출에 실패했습니다. 다시 시도해 주세요.');
+    if (submitBtn){ submitBtn.removeAttribute('disabled'); submitBtn.textContent = '제출'; }
+    return;
+  }
+}
+
+document.getElementById('submitBtn').addEventListener('click', submitToSheet);
+
+// 도움말 팝업
 const helpBtn = document.getElementById('helpBtn');
 const helpModal = document.getElementById('helpModal');
 const helpClose = document.getElementById('helpClose');
@@ -494,17 +570,34 @@ if (helpBtn && helpModal && helpClose){
   helpModal.querySelector('.modal__overlay').addEventListener('click', ()=> helpModal.classList.add('hidden'));
 }
 
-// initial render
-renderColumns(); ensureCards(); setUniformCardSize(); showPage(1);
-
-// prevent Enter on page2
-document.addEventListener('keydown', (e)=>{
-  const onPage2 = !document.getElementById('page2').classList.contains('hidden');
-  if (onPage2 && e.key === 'Enter') e.preventDefault();
-});
+// 제출 완료 → 3페이지 표시
+(function(){
+  const m = document.getElementById('thankModal');
+  if (!m) return;
+  const btn = document.getElementById('thankClose');
+  const ov = m.querySelector('.modal__overlay');
+  function closeModal(){ m.classList.add('hidden'); }
+  if (btn) btn.addEventListener('click', ()=>{
+    closeModal();
+    try{
+      const submitBtn = document.getElementById('submitBtn');
+      if (submitBtn){ submitBtn.textContent = '제출 완료'; submitBtn.disabled = true; }
+      const p1 = document.getElementById('page1');
+      const p2 = document.getElementById('page2');
+      const p3 = document.createElement('section');
+      p3.className = 'page';
+      p3.innerHTML = '<h2>제출 완료</h2><p>설문에 참여해 주셔서 감사합니다. 결과가 성공적으로 제출되었습니다.</p>';
+      if (p1) p1.classList.add('hidden');
+      if (p2) p2.classList.add('hidden');
+      document.querySelector('main.wrap').appendChild(p3);
+      window.scrollTo(0,0);
+    }catch(e){}
+  });
+  if (ov) ov.addEventListener('click', closeModal);
+})();
 </script>
 
-<!-- Keep pool sorted -->
+<!-- 풀 정렬 유지(카드풀 오름차순) -->
 <script>
 (function(){
   function getCardId(el){
@@ -541,86 +634,5 @@ document.addEventListener('keydown', (e)=>{
   });
 })();
 </script>
-
-<!-- Submit to Apps Script (unchanged endpoint) -->
-<script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhxw3kVbBBEJhPGAHXBxoL4S7vZKbqwCK5I5PeaeYEDLIO0u1l2VYwTpAMi-ywRem6og/exec";
-function collectQsort(){
-  const results = [];
-  if (Array.isArray(columns)){
-    columns.forEach(c => {
-      const b = getBucket(c.el);
-      const nodes = b ? Array.from(b.children) : [];
-      nodes.forEach(node => {
-        const id = Number(node.dataset.id);
-        if (!Number.isNaN(id)) results.push({ id, score: Number(c.score) });
-      });
-    });
-  }
-  return results;
-}
-async function submitToSheet(){
-  const submitBtn = document.getElementById('submitBtn');
-  const payload = {
-    career: (document.getElementById('career')?.value || "").trim(),
-    schoolLevel: (document.getElementById('schoolLevel')?.value || "").trim(),
-    experience: Array.from(document.querySelectorAll('input[name="experience"]:checked')).map(el => el.value),
-    experienceOther: (document.getElementById('otherExp')?.value || "").trim(),
-    zoomConsent: (document.getElementById('zoomConsent')?.value || "").trim(),
-    email: (document.getElementById('email')?.value || "").trim(),
-    phone: (document.getElementById('phone')?.value || "").trim(),
-    qsort: collectQsort()
-  };
-  try {
-    await fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
-    const thankModal = document.getElementById('thankModal');
-    if (thankModal) thankModal.classList.remove('hidden');
-    return true;
-  } catch (err) {
-    alert('네트워크 오류로 제출에 실패했습니다. 다시 시도해 주세요.');
-    if (submitBtn){ submitBtn.removeAttribute('disabled'); submitBtn.textContent = '제출'; }
-    if (typeof SUBMITTING !== 'undefined') SUBMITTING = false;
-    return false;
-  }
-}
-</script>
-
-<section class="page hidden" id="page3">
-  <h2>제출 완료</h2>
-  <p>설문에 참여해 주셔서 감사합니다. 결과가 성공적으로 제출되었습니다.</p>
-</section>
-
-<script>
-(function(){
-  function bindConfirmToShowPage3(){
-    const confirmBtn = document.getElementById('thankClose') || document.querySelector('#thankModal button');
-    const thankModal = document.getElementById('thankModal');
-    const submitBtn = document.getElementById('submitBtn');
-    if (!confirmBtn || !thankModal) return false;
-    if (confirmBtn.__boundOK) return true;
-    confirmBtn.__boundOK = true;
-    confirmBtn.addEventListener('click', function(){
-      try {
-        thankModal.classList.add('hidden');
-        if (submitBtn){ submitBtn.textContent = '제출 완료'; submitBtn.disabled = true; }
-        const p1 = document.getElementById('page1');
-        const p2 = document.getElementById('page2');
-        const p3 = document.getElementById('page3');
-        if (p1) p1.classList.add('hidden');
-        if (p2) p2.classList.add('hidden');
-        if (p3) p3.classList.remove('hidden');
-        window.scrollTo(0,0);
-      } catch(e) {}
-    });
-    return true;
-  }
-  let cnt = 0;
-  const intervalID = setInterval(() => {
-    cnt++;
-    if (bindConfirmToShowPage3() || cnt > 20) clearInterval(intervalID);
-  }, 300);
-})();
-</script>
-
 </body>
 </html>
