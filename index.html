@@ -562,8 +562,23 @@ async function submitToSheet(){
     zoomConsent: (document.getElementById('zoomConsent')?.value || "").trim(),
     email: (document.getElementById('email')?.value || "").trim(),
     phone: (document.getElementById('phone')?.value || "").trim(),
-    qsort: collectQsort()
+    qsort: collectQsort(),
+    token: CURRENT_TOKEN || ''
   };
+  try {
+    await fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
+    // 제출 성공으로 간주 → 토큰 사용 처리(JSONP)
+    try { await jsonp(APPS_SCRIPT_URL, { action: 'markUsed', token: CURRENT_TOKEN }); } catch(_){}
+    const thankModal = document.getElementById('thankModal');
+    if (thankModal) thankModal.classList.remove('hidden');
+    return true;
+  } catch (err) {
+    alert('네트워크 오류로 제출에 실패했습니다. 다시 시도해 주세요.');
+    if (submitBtn){ submitBtn.removeAttribute('disabled'); submitBtn.textContent = '제출'; }
+    if (typeof SUBMITTING !== 'undefined') SUBMITTING = false;
+    return false;
+  }
+};
   try {
     await fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
     const thankModal = document.getElementById('thankModal');
@@ -685,29 +700,69 @@ const LOCAL_ALLOWED_TOKENS = [
 
 function getTokenFromURL(){
   const u = new URL(location.href);
-  return u.searchParams.get('t') || '';
+  // 기본은 token, 이전 호환용으로 t도 허용
+  return u.searchParams.get('token') || u.searchParams.get('t') || '';
 }
 
+// JSONP 유틸(Apps Script CORS 회피)
+function jsonp(url, params={}){
+  return new Promise((resolve)=>{
+    const cbName = 'cb_' + Math.random().toString(36).slice(2);
+    params.callback = cbName;
+    const qs = Object.entries(params).map(([k,v])=> `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
+    const script = document.createElement('script');
+    window[cbName] = (data)=>{ try{ resolve(data); } finally { delete window[cbName]; script.remove(); } };
+    script.src = `${url}?${qs}`;
+    document.head.appendChild(script);
+  });
+}
 async function serverValidateToken(token){
-  try {
-    const res = await fetch(`${APPS_SCRIPT_URL}?action=validate&token=${encodeURIComponent(token)}`);
+  const data = await jsonp(APPS_SCRIPT_URL, { action: 'checkToken', token });
+  // 기대 응답: { ok:true, status:"valid"|"used" } 또는 { ok:false, status:"invalid" }
+  return data;
+}?action=validate&token=${encodeURIComponent(token)}`);
     if (!res.ok) return false;
     const data = await res.json();
     return !!(data && (data.ok === true || data.valid === true));
   } catch(e){ return false; }
 }
 
+let CURRENT_TOKEN = '';
 async function checkAccess(){
   const gate = document.getElementById('gate');
   const status = document.getElementById('gateStatus');
   const app = document.getElementById('appRoot');
   const token = getTokenFromURL();
+  CURRENT_TOKEN = token;
   if (!token){
     status.textContent = '접속 토큰이 포함되지 않았습니다. 담당자에게 문의해 주세요.';
     gate.classList.remove('hidden');
     app.classList.add('hidden');
     return false;
   }
+  // 1) 로컬 허용 목록 우선
+  if (LOCAL_ALLOWED_TOKENS.length > 0){
+    if (LOCAL_ALLOWED_TOKENS.includes(token)){
+      gate.classList.add('hidden'); app.classList.remove('hidden'); initApp(); return true;
+    } else {
+      status.textContent = '유효하지 않은 토큰입니다. 링크를 다시 확인해 주세요.';
+      gate.classList.remove('hidden'); app.classList.add('hidden'); return false;
+    }
+  }
+  // 2) 서버 검증(JSONP)
+  status.textContent = '토큰을 확인하는 중…';
+  const resp = await serverValidateToken(token);
+  if (resp && resp.ok && resp.status === 'valid'){
+    gate.classList.add('hidden'); app.classList.remove('hidden'); initApp(); return true;
+  }
+  if (resp && resp.ok && resp.status === 'used'){
+    status.textContent = '이미 사용된 토큰입니다. 담당자에게 문의해 주세요.';
+  } else {
+    status.textContent = '유효하지 않은 토큰입니다. 링크를 다시 확인해 주세요.';
+  }
+  gate.classList.remove('hidden'); app.classList.add('hidden');
+  return false;
+}
   // 1) 로컬 허용 목록 우선
   if (LOCAL_ALLOWED_TOKENS.length > 0){
     if (LOCAL_ALLOWED_TOKENS.includes(token)){
