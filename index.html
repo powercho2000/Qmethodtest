@@ -1,142 +1,167 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1" name="viewport"/>
-    <title>교사의 교육과정 해석을 통한 의미 구성의 코드 유형 탐구(Q방법론)</title>
-    <style>
-        /* 기존 CSS 코드 */
-        :root{ --bg:#0f172a; --panel:#111827; --card:#1f2937; --muted:#94a3b8; --text:#e5e7eb; --accent:#6366f1; --ok:#22c5e; --warn:#f59e0b; --bad:#ef4444; }
-        *{box-sizing:border-box}
-        body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Apple SD Gothic Neo,Noto Sans KR,sans-serif}
-        header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,rgba(15,23,42,.95),rgba(15,23,42,.6));backdrop-filter:blur(8px);border-bottom:1px solid #1f2937}
-        .wrap{max-width:1200px;margin:0 auto;padding:16px}
-        h1{font-size:20px;margin:0 0 6px}
-        .sub{color:var(--muted);font-size:13px}
-        .hidden{display:none}
-        button,select,input,textarea{background:var(--card);color:var(--text);border:1px solid #334155;border-radius:10px;padding:10px 12px;font-size:14px}
-        button{font-weight:700;cursor:pointer}
-        button[disabled]{opacity:.6;cursor:not-allowed}
-        button:hover{border-color:var(--accent)}
-        input,textarea,select{width:100%}
-        .grid{display:grid;grid-template-columns:320px 1fr;gap:16px;margin-top:12px}
-        #pool,.col{background:var(--panel);border:1px solid #2b3647;border-radius:12px}
-        #pool{padding:12px;min-height:220px}
-        .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
-        .note{font-size:13px;color:var(--muted)}
-        .cols{display:grid;gap:10px}
-        .row{display:grid;gap:10px;grid-template-columns:repeat(9,1fr)}
-        .col{min-height: 80px;padding:8px;display:flex;flex-direction:column}
-        .col-header{display:flex;align-items:center;justify-content:space-between;padding:4px 6px;margin-bottom:6px;border-bottom:1px dashed #334155}
-        .tag{font-size:12px;color:var(--muted)}
-        .cap{font-size:12px}
-        .bucket{display:flex;flex-direction:column;gap:6px}
-        .card{font-size: 13px; background:var(--card);border:1px solid #334155;border-radius:12px;padding: 8px 10px;cursor:grab;margin-bottom:6px}
-        .card.dragging{opacity:.6}
-        .col.over{outline:2px dashed var(--accent);outline-offset:-4px}
-        .count-ok{color:var(--ok)}
-        .count-warn{color:var(--warn)}
-        .count-bad{color:var(--bad)}
-        .small{font-size:12px}
-        .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-        .chip{background:#0b1222;border:1px solid #2b3647;border-radius:999px;padding:2px 8px;font-size:12px}
-        .page{max-width:900px;margin:20px auto;padding:16px;background:var(--panel);border:1px solid #2b3647;border-radius:14px}
-        .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-        label{font-size:13px;color:var(--muted);display:block;margin:10px 0 6px}
-        /* 체크박스 라벨 정렬/간격 */
-        .checkbox-group{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-        .checkbox-item{display:flex;align-items:center;gap:8px}
-        .checkbox-item input[type="checkbox"]{width:16px;height:16px;margin:0;vertical-align:middle}
-      
-        /* Modal styles */
-        .modal.hidden { display: none; }
-        .modal { position: fixed; inset: 0; z-index: 1000; }
-        .modal__overlay { position:absolute; inset:0; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); }
-        .modal__content { position:relative; max-width: 720px; margin: 8vh auto; background: var(--panel); border:1px solid #2b3647; border-radius: 12px; padding: 16px; }
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>교사의 교육과정 해석을 통한 의미 구성의 코드 유형 탐구(Q방법론)</title>
+<style>
+    :root{ --bg:#0f172a; --panel:#111827; --card:#1f2937; --muted:#94a3b8; --text:#e5e7eb; --accent:#6366f1; --ok:#22c5e; --warn:#f59e0b; --bad:#ef4444; }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Apple SD Gothic Neo,Noto Sans KR,sans-serif}
+    header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,rgba(15,23,42,.95),rgba(15,23,42,.6));backdrop-filter:blur(8px);border-bottom:1px solid #1f2937}
+    .wrap{max-width:1200px;margin:0 auto;padding:16px}
+    h1{font-size:20px;margin:0 0 6px}
+    .sub{color:var(--muted);font-size:13px}
+    .hidden{display:none}
+    button,select,input,textarea{background:var(--card);color:var(--text);border:1px solid #334155;border-radius:10px;padding:10px 12px;font-size:14px}
+    button{font-weight:700;cursor:pointer}
+    button[disabled]{opacity:.6;cursor:not-allowed}
+    button:hover{border-color:var(--accent)}
+    input,textarea,select{width:100%}
+    .grid{display:grid;grid-template-columns:320px 1fr;gap:16px;margin-top:12px}
+    #pool,.col{background:var(--panel);border:1px solid #2b3647;border-radius:12px}
+    #pool{padding:12px;min-height:220px}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+    .note{font-size:13px;color:var(--muted)}
+    .cols{display:grid;gap:10px}
+    .row{display:grid;gap:10px;grid-template-columns:repeat(9,1fr)}
+    .col{min-height: 80px;padding:8px;display:flex;flex-direction:column}
+    .col-header{display:flex;align-items:center;justify-content:space-between;padding:4px 6px;margin-bottom:6px;border-bottom:1px dashed #334155}
+    .tag{font-size:12px;color:var(--muted)}
+    .cap{font-size:12px}
+    .bucket{display:flex;flex-direction:column;gap:6px}
+    .card{font-size: 13px; background:var(--card);border:1px solid #334155;border-radius:12px;padding: 8px 10px;cursor:grab;margin-bottom:6px}
+    .card.dragging{opacity:.6}
+    .col.over{outline:2px dashed var(--accent);outline-offset:-4px}
+    .count-ok{color:var(--ok)}
+    .count-warn{color:var(--warn)}
+    .count-bad{color:var(--bad)}
+    .small{font-size:12px}
+    .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+    .chip{background:#0b1222;border:1px solid #2b3647;border-radius:999px;padding:2px 8px;font-size:12px}
+    .page{max-width:900px;margin:20px auto;padding:16px;background:var(--panel);border:1px solid #2b3647;border-radius:14px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{font-size:13px;color:var(--muted);display:block;margin:10px 0 6px}
+    /* 체크박스 라벨 정렬/간격 */
+    .checkbox-group{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+    .checkbox-item{display:flex;align-items:center;gap:8px}
+    .checkbox-item input[type="checkbox"]{width:16px;height:16px;margin:0;vertical-align:middle}
+  
+/* Modal styles */
+.modal.hidden { display: none; }
+.modal { position: fixed; inset: 0; z-index: 1000; }
+.modal__overlay { position:absolute; inset:0; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); }
+.modal__content { position:relative; max-width: 720px; margin: 8vh auto; background: var(--panel); border:1px solid #2b3647; border-radius: 12px; padding: 16px; }
 
-        #poolContainer {
-            border-right: 1px dashed #ccc; /* 카드풀과 분포도 사이의 구분선 */
-        }
-        #poolList {
-            display: block;
-            max-height: 400px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 8px;
-            width: 100%;
-            box-sizing: border-box;
-            scrollbar-gutter: stable;  /* 스크롤바 공간 확보 */
-        }
-        #poolList .card {
-            display: block;
-            width: 100%;               /* 카드 폭 그대로 */
-            margin-bottom: 8px;
-        }
 
-        #submitBtn {
-          font-size: 18px;
-          font-weight: bold;
-          padding: 14px 22px;
-          background: var(--accent);
-          color: white;
-          border-radius: 12px;
-          border: none;
-        }
-        #submitBtn:hover {
-          background: #4338ca;
-        }
-        /* === Responsive width tuning (columns >= card width) === */
-        :root { --card-w: 240px; }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  #poolContainer {
+    border-right: 1px dashed #ccc; /* 카드풀과 분포도 사이의 구분선 */
+  }
+  #poolList {
+    display: block;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    scrollbar-gutter: stable;  /* 스크롤바 공간 확보 */
+  }
+  #poolList .card {
+    display: block;
+    width: 100%;               /* 카드 폭 그대로 */
+    margin-bottom: 8px;
+  }
 
-        @media (max-width: 1600px) { :root { --card-w: 220px; } }
-        @media (max-width: 1440px) { :root { --card-w: 200px; } }
-        @media (max-width: 1280px) { :root { --card-w: 180px; } }
 
-        /* Use almost full viewport width */
-        .page { max-width: 98vw !important; }
 
-        /* Shrink left sidebar when space tight, give all remaining space to board */
-        .grid { grid-template-columns: clamp(200px, 18vw, 280px) 1fr !important; }
 
-        /* Each column at least as wide as a card */
-        .row { grid-template-columns: repeat(9, minmax(var(--card-w), 1fr)) !important; }
 
-        /* Cards fill column width; in the pool they use card width */
-        #pool .card { width: var(--card-w); }
-        .col .bucket .card { width: 100%; }
 
-        /* Slightly smaller gutters to win horizontal space */
-        .row { gap: 8px !important; }
-        .cols { gap: 8px !important; }
 
-        /* 추가된 상태 메시지 스타일 */
-        .status-message {
-            margin-top: 50px;
-            padding: 20px;
-            text-align: center;
-            font-size: 1.5em;
-            font-weight: bold;
-            color: var(--text);
-            background: var(--panel);
-            border-radius: 12px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            border: 1px solid var(--accent);
-        }
-        .status-message.error {
-            color: var(--bad);
-            border-color: var(--bad);
-        }
-        .status-message.info {
-            color: var(--accent);
-            border-color: var(--accent);
-        }
-        .status-message.success {
-            color: var(--ok);
-            border-color: var(--ok);
-        }
-    </style>
+
+
+
+
+
+
+#submitBtn {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 14px 22px;
+  background: var(--accent);
+  color: white;
+  border-radius: 12px;
+  border: none;
+}
+#submitBtn:hover {
+  background: #4338ca;
+}
+</style>
+<style>
+/* === Responsive width tuning (columns >= card width) === */
+:root { --card-w: 240px; }
+
+@media (max-width: 1600px) { :root { --card-w: 220px; } }
+@media (max-width: 1440px) { :root { --card-w: 200px; } }
+@media (max-width: 1280px) { :root { --card-w: 180px; } }
+
+/* Use almost full viewport width */
+.page { max-width: 98vw !important; }
+
+/* Shrink left sidebar when space tight, give all remaining space to board */
+.grid { grid-template-columns: clamp(200px, 18vw, 280px) 1fr !important; }
+
+/* Each column at least as wide as a card */
+.row { grid-template-columns: repeat(9, minmax(var(--card-w), 1fr)) !important; }
+
+/* Cards fill column width; in the pool they use card width */
+#pool .card { width: var(--card-w); }
+.col .bucket .card { width: 100%; }
+
+/* Slightly smaller gutters to win horizontal space */
+.row { gap: 8px !important; }
+.cols { gap: 8px !important; }
+
+/* 추가된 상태 메시지 스타일 */
+.status-message {
+    margin-top: 50px;
+    padding: 20px;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--text);
+    background: var(--panel);
+    border-radius: 12px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid var(--accent);
+}
+.status-message.error {
+    color: var(--bad);
+    border-color: var(--bad);
+}
+.status-message.info {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+.status-message.success {
+    color: var(--ok);
+    border-color: var(--ok);
+}
+</style>
 </head>
 <body>
     <header>
@@ -154,9 +179,6 @@
     <!-- 실제 설문 콘텐츠 (토큰 유효성 검증 후 표시) -->
     <div id="survey-main-content" class="hidden">
         <form id="q-sort-form">
-            <!-- 조경철2577님께서 요청하신 Q-진술문 분류 부분만 남깁니다. -->
-            <!-- 이전에 제가 임의로 추가했던 인구 통계 정보는 제거되었습니다. -->
-
             <div class="page">
                 <h2>Q-진술문 분류 (카드 분류)</h2>
                 <p class="note">아래 35개 진술문을 가장 동의하는 것부터 동의하지 않는 것까지 [-4] 에서 [+4] 스케일에 맞춰 분포표에 분류해주세요.</p>
@@ -288,7 +310,7 @@
             const qSortingResults = collectQSortingResults();
             if (!qSortingResults) return; // Q 분류 결과 수집 실패 또는 유효성 검사 실패
 
-            // 인구 통계 정보가 없으므로 generalData는 빈 객체로 전송
+            // 기존 HTML에는 Q 분류 외의 일반 데이터 필드가 없으므로 빈 객체로 전송
             const generalData = {};
             
             console.log("Q 분류 설문 데이터 제출 시도:", generalData, qSortingResults);
@@ -329,16 +351,8 @@
             }
         });
         
-        // 인구 통계 정보가 없으므로 validateGeneralForm 함수는 필요 없으나,
-        // 혹시 나중에 추가할 경우를 대비하여 주석 처리하거나 제거 가능
-        /*
-        function validateGeneralForm(generalData) {
-            // 현재 일반 폼 데이터가 없으므로 항상 true 반환
-            return true;
-        }
-        */
-
         // --- Q-Sorting 관련 JavaScript 함수 (initializeQSorting 등) ---
+        // 이 부분은 조경철2577님께서 제공해주신 Q-Sorting 기능을 위한 JavaScript 코드와 제가 추가했던 부분들이 합쳐져 있습니다.
         function initializeQSorting() {
             console.log("Q-Sorting 기능 초기화 중...");
             
