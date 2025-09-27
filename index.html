@@ -87,7 +87,57 @@
 
 
 
-
+<script>
+// ===== Token Validation (no layout changes) =====
+(function(){
+  const TOKEN_API_URL = "https://script.google.com/macros/s/AKfycbzhxw3kVbBBEJhPGAHXBxoL4S7vZKbqwCK5I5PeaeYEDLIO0u1l2VYwTpAMi-ywRem6og/exec";
+  function getTokenFromURL(){
+    try{
+      const u = new URL(window.location.href);
+      return (u.searchParams.get('token') || u.searchParams.get('t') || '').trim();
+    }catch(_){ return ''; }
+  }
+  async function verifyTokenOnce(){
+    const t = getTokenFromURL();
+    if(!t){ window.__TOKEN_VALID__ = false; window.__TOKEN_STATUS__ = 'missing'; return; }
+    try{
+      const qs = new URLSearchParams({ action:'checkToken', token:t });
+      const res = await fetch(`${TOKEN_API_URL}?${qs.toString()}`, { method:'GET', mode:'cors' });
+      if(!res.ok){ window.__TOKEN_VALID__ = false; window.__TOKEN_STATUS__ = 'error'; return; }
+      const data = await res.json().catch(()=>({}));
+      if (data && data.ok && data.status === 'valid'){
+        window.__TOKEN_VALID__ = true; window.__TOKEN_STATUS__ = 'valid';
+      } else if (data && data.status === 'used'){
+        window.__TOKEN_VALID__ = false; window.__TOKEN_STATUS__ = 'used';
+      } else {
+        window.__TOKEN_VALID__ = false; window.__TOKEN_STATUS__ = 'invalid';
+      }
+    }catch(e){
+      window.__TOKEN_VALID__ = false; window.__TOKEN_STATUS__ = 'error';
+    }
+  }
+  window.__TOKEN_VALID__ = false;
+  window.__TOKEN_STATUS__ = 'checking';
+  verifyTokenOnce();
+  window.__ensureTokenOK__ = async function(){
+    if (window.__TOKEN_STATUS__ === 'checking'){
+      await new Promise(r=> setTimeout(r, 200));
+    }
+    if (window.__TOKEN_VALID__ === true) return true;
+    const st = window.__TOKEN_STATUS__;
+    if (st === 'missing'){
+      alert('초대 메일로 받은 개인 전용 링크로 접속해 주세요. (토큰 없음)');
+    } else if (st === 'used'){
+      alert('이미 사용된 링크입니다. 설문을 다시 진행할 수 없습니다.');
+    } else if (st === 'invalid'){
+      alert('유효하지 않은 링크입니다. 초대 메일의 링크를 다시 확인해 주세요.');
+    } else {
+      alert('링크 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    }
+    return false;
+  };
+})();
+</script>
 
 
 
