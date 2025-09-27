@@ -5,7 +5,7 @@
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>교사의 교육과정 해석을 통한 의미 구성의 코드 유형 탐구(Q방법론)</title>
 <style>
-    :root{ --bg:#0f172a; --panel:#111827; --card:#1f2937; --muted:#94a3b8; --text:#e5e7eb; --accent:#6366f1; --ok:#22c5e; --warn:#f59e0b; --bad:#ef4444; }
+    :root{ --bg:#0f172a; --panel:#111827; --card:#1f2937; --muted:#94a3b8; --text:#e5e7eb; --accent:#6366f1; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; }
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Apple SD Gothic Neo,Noto Sans KR,sans-serif}
     header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,rgba(15,23,42,.95),rgba(15,23,42,.6));backdrop-filter:blur(8px);border-bottom:1px solid #1f2937}
@@ -42,72 +42,16 @@
     .page{max-width:900px;margin:20px auto;padding:16px;background:var(--panel);border:1px solid #2b3647;border-radius:14px}
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     label{font-size:13px;color:var(--muted);display:block;margin:10px 0 6px}
-    /* 체크박스 라벨 정렬/간격 */
-    .checkbox-group{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-    .checkbox-item{display:flex;align-items:center;gap:8px}
-    .checkbox-item input[type="checkbox"]{width:16px;height:16px;margin:0;vertical-align:middle}
-  
-/* Modal styles */
-.modal.hidden { display: none; }
-.modal { position: fixed; inset: 0; z-index: 1000; }
-.modal__overlay { position:absolute; inset:0; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); }
-.modal__content { position:relative; max-width: 720px; margin: 8vh auto; background: var(--panel); border:1px solid #2b3647; border-radius: 12px; padding: 16px; }
 
+    /* Gate (token access) */
+    #gate { max-width:900px;margin:20px auto;padding:16px;background:var(--panel);border:1px solid #2b3647;border-radius:14px }
+    #gate .status { font-size:14px; color: var(--muted); margin-top:8px }
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  #poolContainer {
-    border-right: 1px dashed #ccc; /* 카드풀과 분포도 사이의 구분선 */
-  }
-  #poolList {
-    display: block;
-    max-height: 400px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 8px;
-    width: 100%;
-    box-sizing: border-box;
-    scrollbar-gutter: stable;  /* 스크롤바 공간 확보 */
-  }
-  #poolList .card {
-    display: block;
-    width: 100%;               /* 카드 폭 그대로 */
-    margin-bottom: 8px;
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-#submitBtn {
-  font-size: 18px;
-  font-weight: bold;
-  padding: 14px 22px;
-  background: var(--accent);
-  color: white;
-  border-radius: 12px;
-  border: none;
-}
-#submitBtn:hover {
-  background: #4338ca;
-}
+    /* Modal styles */
+    .modal.hidden { display: none; }
+    .modal { position: fixed; inset: 0; z-index: 1000; }
+    .modal__overlay { position:absolute; inset:0; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); }
+    .modal__content { position:relative; max-width: 720px; margin: 8vh auto; background: var(--panel); border:1px solid #2b3647; border-radius: 12px; padding: 16px; }
 </style>
 <style>
 /* === Responsive width tuning (columns >= card width) === */
@@ -134,452 +78,679 @@
 .row { gap: 8px !important; }
 .cols { gap: 8px !important; }
 
-/* 추가된 상태 메시지 스타일 */
-.status-message {
-    margin-top: 50px;
-    padding: 20px;
-    text-align: center;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: var(--text);
-    background: var(--panel);
-    border-radius: 12px;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    border: 1px solid var(--accent);
+/* Modal styles */
+.modal.hidden { display: none; }
+.modal { position: fixed; inset: 0; z-index: 1000; }
+.modal__overlay { position:absolute; inset:0; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); }
+.modal__content { position:relative; max-width: 720px; margin: 8vh auto; background: var(--panel); border:1px solid #2b3647; border-radius: 12px; padding: 16px; }
+
+</style>
+<style>
+/* 강조된 배치요령 버튼 */
+.help-btn {
+  background: #6366f1;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
 }
-.status-message.error {
-    color: var(--bad);
-    border-color: var(--bad);
+.help-btn:hover {
+  background: #4f46e5;
+  transform: scale(1.03);
 }
-.status-message.info {
-    color: var(--accent);
-    border-color: var(--accent);
+</style>
+<style>
+/* Board wrapper for Q-sort columns */
+.board {
+  border: 1px solid #2b3647;
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--panel);
 }
-.status-message.success {
-    color: var(--ok);
-    border-color: var(--ok);
+</style>
+<style>
+/* Re-introduce a clear dashed divider between pool and board, without crossing borders */
+.grid { position: relative; align-items: start; } /* ensure titles align at top */
+.grid::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  left: clamp(200px, 18vw, 280px);
+  border-left: 2px dashed #334155;
+  pointer-events: none;
+  z-index: 1;
+}
+/* Make the board visually self-contained */
+.board { position: relative; overflow: hidden; background: var(--panel); border: 1px solid #2b3647; border-radius: 12px; padding: 12px; }
+</style>
+<style>
+/* Uniform card height based on longest statement */
+:root { --card-h: auto; }
+.card { height: var(--card-h); overflow:auto; }
+</style>
+<style>.col-header .tag { color: #ffffff; font-weight: bold; font-size: 15px; }</style>
+<style>
+/* Ensure vertical scroll in the card pool (poolList) */
+#page2 aside #pool #poolList {
+  display: block !important;
+  max-height: 50vh !important;
+  min-height: 240px;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 8px;               /* keep padding for readability */
+  box-sizing: border-box;
+  scrollbar-gutter: stable;
+}
+/* Keep pool cards full width of the list */
+#page2 aside #pool #poolList .card {
+  width: 100% !important;
+}
+
+#submitBtn {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 14px 22px;
+  background: var(--accent);
+  color: white;
+  border-radius: 12px;
+  border: none;
+}
+#submitBtn:hover {
+  background: #4338ca;
 }
 </style>
 </head>
 <body>
-    <header>
-        <div class="wrap">
-            <h1>교사의 교육과정 해석을 통한 의미 구성의 코드 유형 탐구 (Q방법론)</h1>
-            <div class="sub">본 설문은 교사의 교육과정 해석 유형을 탐색하는 연구입니다.</div>
+<header>
+  <div class="wrap">
+    <h1>교사의 교육과정 해석을 통한 의미 구성의 코드 유형 탐구(Q방법론)</h1>
+    <div class="sub">
+      1단계에서 응답자 정보를 입력하고, 2단계에서 Q진술문 카드를 분포에 맞게 배치한 뒤 제출부탁드립니다.<br/>
+      제공해주신 개인 정보 및 응답 결과는 연구에만 사용되며, 연구 종료 즉시 폐기됩니다.
+    </div>
+  </div>
+</header>
+
+<!-- Token gate (보안: 토큰 소지자만 접근) -->
+<section id="gate" class="wrap">
+  <h2 style="margin:0 0 8px">접근 제한됨</h2>
+  <p>해당 설문은 개별화된 접속 토큰을 포함한 링크로만 참여할 수 있습니다.<br/>올바른 링크인지 확인해 주세요.</p>
+  <div class="status" id="gateStatus">토큰 확인 중…</div>
+</section>
+
+<main class="wrap hidden" id="appRoot">
+  <!-- PAGE 1 -->
+  <section class="page" id="page1">
+    <h2 style="margin:0 0 12px">1단계: 응답자 정보를 입력하여 주세요.</h2>
+    <!-- 1) 교직 경력 -->
+    <div>
+      <label for="career">선생님의 교직 경력을 선택하여 주세요. *</label>
+      <select id="career" required>
+        <option value="">선택하세요</option>
+        <option value="under5">5년 미만</option>
+        <option value="5to10">5년 이상 ~ 10년 미만</option>
+        <option value="10to15">10년 이상 ~ 15년 미만</option>
+        <option value="15to20">15년 이상 ~ 20년 미만</option>
+        <option value="20to25">20년 이상 ~ 25년 미만</option>
+        <option value="25plus">25년 이상</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="schoolLevel">선생님께서 현재 근무하고 계신 학교급을 선택하여 주세요. *</label>
+      <select id="schoolLevel" required>
+        <option value="">선택하세요</option>
+        <option value="middle">중학교</option>
+        <option value="high">고등학교</option>
+      </select>
+    </div>
+
+    <!-- 2) 참여 경험 체크박스 -->
+    <div style="margin:14px 0">
+      <label>선생님께서는 아래와 같은 작업에 참여하신 적이 있나요? (복수 선택 가능, 전혀 없음 선택 시 다른 항목 선택 불가) *</label>
+      <div class="checkbox-group" id="experience-options">
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="curriculumDev"/> 국가수준 지리과 교육과정 개발 연구</label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="textbookAuth"/> 지리과 검·인정 교과서 집필(검토 포함)</label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="textbookReview"/> 지리과 교과서 검·인정 업무</label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="materialDev"/> 지리과 개정 교육과정 관련 교수·학습 및 평가 자료 개발</label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="trainingInstructor"/> 지리과 개정 교육과정 선도 교원 연수 강사</label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="curriculumLeader"/> 지리과 개정 교육과정 선도 교원</label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="plc"/> 지리 관련 전문적 교원 학습 공동체 활동(학교 안, 학교 밖 모두 포함)</label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="other"/> 기타: <input id="otherExp" placeholder="직접 입력" style="margin-left:6px;flex:1" type="text"/></label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="none"/> 전혀 없음</label>
+      </div>
+    </div>
+
+    <!-- 3) 면담 의향 -->
+    <div style="margin:14px 0">
+      <label>연구자의 설문 분석 후 각 코드 유형을 대표하는 선생님들을 대상으로 하는 온라인(줌) 면담이 진행될 수 있습니다. 면담 요청 시 많은 참여 부탁드립니다. 요청 시 면담 참여 가능하십니까? *</label>
+      <select id="zoomConsent" required>
+        <option value="">선택하세요</option>
+        <option value="yes">참여할 의향이 있습니다.</option>
+        <option value="no">참여할 의향이 없습니다.</option>
+      </select>
+    </div>
+
+    <!-- 4) 이메일 & 전화번호 -->
+    <div style="margin-top:14px">
+      <label for="email">이메일 *</label>
+      <input id="email" required type="email"/>
+    </div>
+    <div>
+      <label for="phone">핸드폰 번호 *(설문 참여 감사 기프티콘 발송용)</label>
+      <input id="phone"/>
+    </div>
+
+    <!-- 5) 연구 동의 -->
+    <div class="checkbox-group" style="margin-top:12px">
+      <label class="checkbox-item"><input id="consent" type="checkbox"/> 연구 참여에 동의합니다.</label>
+    </div>
+
+    <div class="toolbar">
+      <button id="nextBtn">다음 (정렬 단계로 이동)</button>
+    </div>
+  </section>
+
+  <!-- PAGE 2 -->
+  <section class="page hidden" id="page2">
+    <h2 style="margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">2단계: 선생님께서 Q진술문 카드를 읽어보신 후, 본인의 생각에 따라 ‘매우 비동의’에서부터 ‘매우 동의’ 사이의 위치에 알맞게 배치해 주세요.<button class="help-btn" id="helpBtn">👉 Q진술문 배치 요령을 반드시 읽어주세요</button></h2>
+
+    <div class="modal hidden" id="helpModal">
+      <div class="modal__overlay"></div>
+      <div class="modal__content">
+        <h3 style="margin-top:0">Q진술문 배치 요령</h3>
+        <ul style="line-height:1.75">
+          <li>각 카드의 진술은 교사의 국가수준 교육과정 해석과 관련한 교사의 인식, 태도들 담고 있습니다. 카드 배치 전 39개의 진술을 먼저 읽어주세요</li>
+          <li>카드 진술문에 대한 선생님의 동의, 미동의 정도에 따라 카드를 옮겨주시면 됩니다.</li>
+          <li>양 극단에 해당하는 매우 비동의, 매우 동의 하는 진술부터 배치하시고 중립(판단 보류)에 해당하는 진술을 마지막에 배치하시면 응답하기가 편리하실 것입니다.</li>
+          <li>카드 배치를 수정하고 싶으실 경우, 옮기실 카드를 카드 풀로 옮기시면 됩니다. 처음부터 다시 진행하시고 싶으실 경우, 분포 초기화 버튼을 누르시면 됩니다.</li>
+          <li>각 동의/비동의 단계에 배치할 수 있는 카드의 수는 강제 정규 분포가 이루어지도록 설정되어 있으며, 선생님께서 배치하는 카드의 숫자가 보일 것 입니다.</li>
+        </ul>
+        <div style="margin:10px 0 14px">
+          <div>-4 (매우 비동의) → 2개</div>
+          <div>-3 (비동의) → 3개</div>
+          <div>-2 (다소 비동의) → 4개</div>
+          <div>-1 (약간 비동의) → 6개</div>
+          <div>0 (중립/판단 보류) → 9개</div>
+          <div>1 (약간 동의) → 6개</div>
+          <div>2 (다소 동의) → 4개</div>
+          <div>3 (동의) → 3개</div>
+          <div>4 (매우 동의) → 2개</div>
         </div>
-    </header>
-
-    <!-- 토큰 상태 메시지 표시 영역 -->
-    <div id="status-message" class="status-message info">
-        설문을 불러오는 중입니다. 잠시만 기다려 주세요...
+        <div style="text-align:right"><button id="helpClose">닫기</button></div>
+      </div>
     </div>
 
-    <!-- 실제 설문 콘텐츠 (토큰 유효성 검증 후 표시) -->
-    <div id="survey-main-content" class="hidden">
-        <form id="q-sort-form">
-            <div class="page">
-                <h2>Q-진술문 분류 (카드 분류)</h2>
-                <p class="note">아래 35개 진술문을 가장 동의하는 것부터 동의하지 않는 것까지 [-4] 에서 [+4] 스케일에 맞춰 분포표에 분류해주세요.</p>
-
-                <div class="grid">
-                    <div id="poolContainer">
-                        <h3><span id="poolCount" class="count-ok">0</span>개 남음</h3>
-                        <p class="note">여기에 분류할 카드들이 있습니다.</p>
-                        <div id="poolList">
-                            <!-- Q-Cards will be loaded here -->
-                        </div>
-                    </div>
-
-                    <div id="sortGrid">
-                        <h3>분포표</h3>
-                        <div class="toolbar">
-                            <div class="chips">
-                                <span class="chip">매우 부정 [-4]</span>
-                                <span class="chip">다소 부정 [-2]</span>
-                                <span class="chip">중립 [0]</span>
-                                <span class="chip">다소 긍정 [+2]</span>
-                                <span class="chip">매우 긍정 [+4]</span>
-                            </div>
-                        </div>
-
-                        <div class="cols">
-                            <div class="row">
-                                <div class="col" data-score="-4"><div class="col-header small"><span class="tag">-4</span> <span class="cap">2개</span></div><div class="bucket"></div></div>
-                                <div class="col" data-score="-3"><div class="col-header small"><span class="tag">-3</span> <span class="cap">3개</span></div><div class="bucket"></div></div>
-                                <div class="col" data-score="-2"><div class="col-header small"><span class="tag">-2</span> <span class="cap">5개</span></div><div class="bucket"></div></div>
-                                <div class="col" data-score="-1"><div class="col-header small"><span class="tag">-1</span> <span class="cap">6개</span></div><div class="bucket"></div></div>
-                                <div class="col" data-score="0"><div class="col-header small"><span class="tag">0</span> <span class="cap">7개</span></div><div class="bucket"></div></div>
-                                <div class="col" data-score="1"><div class="col-header small"><span class="tag">+1</span> <span class="cap">6개</span></div><div class="bucket"></div></div>
-                                <div class="col" data-score="2"><div class="col-header small"><span class="tag">+2</span> <span class="cap">5개</span></div><div class="bucket"></div></div>
-                                <div class="col" data-score="3"><div class="col-header small"><span class="tag">+3</span> <span class="cap">3개</span></div><div class="bucket"></div></div>
-                                <div class="col" data-score="4"><div class="col-header small"><span class="tag">+4</span> <span class="cap">2개</span></div><div class="bucket"></div></div>
-                            </div>
-                        </div>
-                        <p class="note">각 칸에 지정된 개수만큼 카드를 분류해주세요. 숫자는 자동으로 업데이트됩니다.</p>
-                        <div style="text-align:center; margin-top:20px;">
-                            <button type="submit" id="submitBtn">설문 제출 완료</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
+    <div class="grid">
+      <aside>
+        <h2 style="margin:8px 0 6px;font-size:16px">카드 풀(미배치)</h2>
+        <div class="dropzone" data-score="pool" id="pool">
+          <div class="note">여기에 놓으면 카드가 ‘미배치’ 상태가 됩니다.</div>
+          <div class="bucket" id="poolList"></div>
+        </div>
+        <details style="margin-top:10px">
+          <summary>현재 배치 요약</summary>
+          <div class="small" id="summary" style="margin-top:6px;white-space:pre-wrap"></div>
+        </details>
+        <div class="toolbar" style="margin-top:16px">
+          <button id="resetBtn">분포 초기화</button>
+          <button id="backBtn">뒤로 (응답자 정보)</button>
+          <button id="submitBtn">제출</button>
+        </div>
+      </aside>
+      <section>
+        <h2 style="margin:8px 0 6px;font-size:16px">Q소팅 분포도</h2>
+        <div class="board">
+          <div class="cols">
+            <div class="row" id="row"></div>
+          </div>
+        </div>
+      </section>
     </div>
 
-    <!-- JavaScript 로직 -->
-    <script>
-        // 🚨 토큰 관리 (확인 및 사용 처리) Apps Script 웹 앱 URL
-        const TOKEN_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzhxw3kVbBBEJhPGAHXBxoL4S7vZKbqwCK5I5PeaeYEDLIO0u1l2VYwTpAMi-ywRem6og/exec";
-        // 🚨 Q방법론 응답 결과가 저장되는 Apps Script 웹 앱 URL (doPost 필요)
-        const Q_SURVEY_DATA_SUBMIT_URL = "https://script.google.com/macros/s/AKfycbxr3fORzxqC94mS_KAWSeL_NFwzIctrus9ntJSfHjofSUMNqTmH7Pb7fZfqeLoQMRNwdA/exec";
+    <div class="modal hidden" id="thankModal">
+      <div class="modal__overlay"></div>
+      <div class="modal__content">
+        <h3>설문 제출 완료</h3>
+        <p>설문에 참여해 주셔서 감사합니다.</p>
+        <div style="text-align:right; display:flex; gap:8px; justify-content:flex-end;">
+          <button id="thankClose">닫기</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 
-        const statusMessageDiv = document.getElementById('status-message');
-        const surveyMainContent = document.getElementById('survey-main-content');
-        const qSortForm = document.getElementById('q-sort-form');
-        let currentToken = ''; // 현재 토큰 저장
+<script>
+// === Uniform card height ===
+function setUniformCardSize(){
+  document.querySelectorAll('.card').forEach(c=>{ c.style.height='auto'; });
+  let maxH = 0;
+  document.querySelectorAll('.card').forEach(c=>{ maxH = Math.max(maxH, c.offsetHeight); });
+  if(maxH < 56) maxH = 56;
+  document.documentElement.style.setProperty('--card-h', maxH + 'px');
+}
+window.addEventListener('resize', ()=> setUniformCardSize());
 
-        // URL 파라미터에서 특정 값을 가져오는 함수
-        function getUrlParameter(name) {
-            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-            const results = regex.exec(location.search);
-            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-        }
+// ===== 설정: 39문항 / 9점 척도 =====
+const PRESET_39 = {
+  scores:[-4,-3,-2,-1,0,1,2,3,4],
+  caps:[  2,  3,  4,  6, 9, 6, 4, 3, 2],
+  labels:[
+    "-4 (매우 비동의)","-3 (비동의)","-2 (다소 비동의)","-1 (약간 비동의)",
+    "0 (중립/판단 보류)","1 (약간 동의)","2 (다소 동의)","3 (동의)","4 (매우 동의)"
+  ]
+};
+const STATEMENTS = [
+  {id:1, text:"지리 수업에서 제시하는 학습 목표는 현실 세계의 복잡성을 드러내기보다 단순화된 틀과 구호로 반복된다고 느낀다."},
+  {id:2, text:"교사는 학생의 실제 경험보다 국가 수준 교육과정 문서 속 서술이나 교과서 예시에 맞추어 수업을 꾸릴 수밖에 없다고 생각한다."},
+  {id:3, text:"국가 수준 교육과정에 제시된 성취기준은 실제 지리 현상을 탐구하게 하기보다 모범 답안을 찾게 만드는 경향이 강하다."},
+  {id:4, text:"학생들의 학습 활동 참여는 자율적인 탐구라기보다 국가 수준 교육과정 문서가 요구하는 형식적 수행으로 흐른다고 본다."},
+  {id:5, text:"지리 교육에서 강조하는 학습 목표, 개념들은 현실의 복잡한 문제나 갈등을 담지 못하고, 국가 수준 교육과정 문서, 교과서 속에서 정해진 문구처럼 형식적으로 다뤄진다."},
+  {id:6, text:"교사의 교육과정 해석은 학생과 교사가 맞닥뜨리는 구체적이고 복잡한 지리적 삶의 맥락보다는, 국가 수준 교육과정 문서와 평가 관련 지침에 더 충실해질 수밖에 없다고 생각한다."},
+  {id:7, text:"지리적 문제 및 쟁점은 복잡한 현실 문제로 다뤄지기보다 단순한 사례와 도식으로만 제시되어 간단하게 다뤄진다고 본다."},
+  {id:8, text:"국가 수준의 교육과정의 지시는 교사의 창의적 해석보다는 획일적인 활동으로 귀결되는 경우가 많다."},
+  {id:9, text:"학생들은 실제 지역 사회보다 교과서 안에서 정형화된 지리적 개념 및 탐구를 배우는 데 익숙해진다고 느낀다."},
+  {id:10, text:"국가수준 교육과정 문서에서 반복적으로 강조되는 용어나 개념은 실제 지리 현상과 연결되기보다, 국가수준 교육과정 문서와 교과서 안에서 정해진 문구와 예시로만 반복된다."},
+  {id:11, text:"지리 교육은 종종 학생의 실제 이해보다, 국가수준 교육과정이 정해 놓은 성취기준이나 평가 기준을 충족하는 것에 더 치중하게 된다."},
+  {id:12, text:"국가수준 성취기준이 제시하는 목표들은 학생들의 삶과 무관한 채 ‘해야 하는 것’으로만 받아들여질 위험이 크다고 본다."},
+  {id:13, text:"학생의 학습 성취 여부가 루브릭(채점 기준표)과 같은 표준화된 평가 지표로 측정될 때, 학생은 학습 보다 평가 지표 맞추기에 집중하게 된다고 본다."},
+  {id:14, text:"국가수준 교육과정에 제시된 지리 학습의 목표들은 정해진 답으로만 읽히지 않고, 교사가 처한 지역적 맥락이나 학생들의 삶에 따라 달리 해석될 수 있다고 본다."},
+  {id:15, text:"국가수준 교육과정에 제시된 성취기준 달성을 위해 학생에게 제공하는 학습 경험은 교과서에서 제시된 활동 뿐만 아니라, 주변 지역의 지리 현상이나 학생 경험으로 자유롭게 확장할 수 있다고 생각한다."},
+  {id:16, text:"국가가 정한 지리 교육의 내용과 방법과 같은 틀은 분명 문서로서 존재하지만, 교사가 현장에서 재구성하면서 새로운 수업 흐름을 만들어낼 수 있는 여지가 충분하다고 본다."},
+  {id:17, text:"국가수준 교육과정 문서에서 제시하는 지리 수업의 목표, 내용, 방법들은 교사와 학생이 함께 실험해보고 변형할 수 있는 열린 지점으로 이해된다."},
+  {id:18, text:"정형화된 성취기준, 학습 목표조차도 교사의 선택에 따라 다른 모습으로 구현될 수 있다는 점이 중요하다고 본다."},
+  {id:19, text:"국가수준 교육과정 문서에 없는 지리적 주제를 다루더라도 학생 삶과 연결된다면 충분히 교육과정의 의미 안에 포함된다고 여긴다."},
+  {id:20, text:"국가수준 교육과정의 지침은 지리 교사에게 통제의 장치이면서도 동시에 창의적 해석의 가능성을 남겨둔다고 생각한다."},
+  {id:21, text:"교사의 교육과정 해석은 국가수준 교육과정 문서에 적힌 기준을 그대로 따르는 것이 아니라, 이를 학생들의 경험 세계와 연결하는 것이라고 본다."},
+  {id:22, text:"국가수준 교육과정 문서에서 제시하는 교수․학습 및 평가 방향을 완전히 따르지 않더라도, 교사가 학생과 지역 상황 맞게 지리 수업을 자율적으로 재구성하여 진행하는 것은 정당하다고 생각한다."},
+  {id:23, text:"국가수준 교육과정은 지리 교사에게 단일한 길이 아니라 여러 갈래의 길을 열어주는 출발점으로 읽힌다."},
+  {id:24, text:"교사의 교육과정 해석과 실천은 언제나 문서에 적힌 지시보다 더 풍부하고 다양할 수 있다."},
+  {id:25, text:"지리 수업에서는 국가수준의 성취기준보다 학생과 지역의 특수성을 먼저 고려해야 한다고 본다."},
+  {id:26, text:"지리 수업의 의미는 교사, 학생, 교실 환경, 지역 자료가 어떻게 어울리느냐에 따라 달라지기 때문에 국가수준 교육과정 및 교과에서 제시한 학습 순서도 현장에 맞게 재구성될 수 있다고 본다."},
+  {id:27, text:"국가수준 교육과정에서 제시된 지리 교육의 목표들은 단순한 지식 전달을 넘어, 교사 자신이 어떤 존재인지 성찰하게 만드는 계기로 읽힌다."},
+  {id:28, text:"학생들이 배우는 지리적 지식, 기능, 가치․태도 등은 결국 자기 삶을 돌아보게 하는 물음이 되어야 한다고 생각한다."},
+  {id:29, text:"지리 수업에서 제시되는 학습 목표들은 객관적 지리적 사실의 나열이 아니라, 학생이 어떻게 세계 속에 살아가고 있는지를 묻는 계기라고 본다."},
+  {id:30, text:"교사의 교육과정 해석은 학생의 생활세계와 연결될 때 비로소 교육적 의미를 가진다고 느낀다."},
+  {id:31, text:"지리 교육은 교사와 학생이 함께 세계와 자기 자신을 성찰하는 장으로 기능해야 한다고 생각한다."},
+  {id:32, text:"국가가 제시하는 지리 교육의 목표는 학생이 자기 가능성을 발견하는 기회로 전환될 수 있다고 본다."},
+  {id:33, text:"국가수준 교육과정 문서가 말하는 성취기준들은 단순히 외워야 할 지식이 아니라, 삶의 문제와 연결될 때 의미가 있다고 본다."},
+  {id:34, text:"학생은 지리를 통해 자기 삶과 세계를 질문하고 대답할 수 있어야 한다고 여긴다."},
+  {id:35, text:"지리 교육에서 중요한 것은 사실의 축적보다 자신의 경험 속에서 의미를 발견하는 것이라고 생각한다."},
+  {id:36, text:"교사는 학생이 수동적으로 배우는 존재가 아니라, 자기 삶을 주체적으로 살아가는 존재가 되도록 돕는다고 본다."},
+  {id:37, text:"국가수준 교육과정 문서를 읽는 일은 교사에게도 자기 존재를 새롭게 이해하는 기회가 된다."},
+  {id:38, text:"지리 수업은 교사와 학생이 함께 세계 속에서 살아가고 있다는 사실을 드러내는 장이라고 생각한다."},
+  {id:39, text:"국가수준 교육과정 및 교과서 지시대로만 진행하는 수업은 교사와 학생의 발전을 막기 때문에, 큰 흐름만 참고해 교사가 새롭게 수업을 구성할 때 교사와 학생 모두 성장할 수 있다."}
+];
+let cards = JSON.parse(JSON.stringify(STATEMENTS));
+let columns = [];
+let selectedCardId = null;
+let SUBMITTED = false;
+let SUBMITTING = false;
 
-        // Apps Script 웹 앱으로 요청을 보내고 응답을 받는 함수
-        async function callAppsScript(url, action, token) {
-            const fullUrl = `${url}?action=${action}&token=${encodeURIComponent(token)}`;
-            try {
-                const response = await fetch(fullUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error(`Apps Script (${action}) 호출 중 오류 발생:`, error);
-                return { ok: false, status: "error", message: "서버 통신 오류" };
-            }
-        }
+const poolList = null; // will be set in initApp
+let rowEl = null;
+let summaryEl = null;
 
-        // 페이지 로드 시 토큰 검증 로직 실행
-        document.addEventListener('DOMContentLoaded', async () => {
-            currentToken = getUrlParameter('token');
+function showPage(n){
+  document.getElementById('page1').classList.toggle('hidden', n!==1);
+  document.getElementById('page2').classList.toggle('hidden', n!==2);
+}
 
-            if (!currentToken) {
-                statusMessageDiv.className = 'status-message error';
-                statusMessageDiv.innerHTML = '유효한 설문 토큰이 URL에 포함되어 있지 않습니다. 다시 확인해 주세요.';
-                return;
-            }
+function validateRespondent(){
+  const career = document.getElementById('career').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const schoolLevel = document.getElementById('schoolLevel').value.trim();
+  if(!schoolLevel){ alert('현재 근무하고 계신 학교급을 선택하세요.'); return false; }
+  const email = document.getElementById('email').value.trim();
+  const zoomConsent = document.getElementById('zoomConsent').value.trim();
+  const consent = document.getElementById('consent').checked;
+  const checked = [...document.querySelectorAll('#experience-options input[name="experience"]:checked')];
+  const otherChecked = checked.some(i=> i.value==='other');
+  const otherText = (document.getElementById('otherExp')||{}).value ? document.getElementById('otherExp').value.trim() : '';
+  if(!career){ alert('교직 경력을 선택하세요.'); return false; }
+  if(checked.length===0){ alert('작업 참여 경험을 최소 1개 선택하세요.'); return false; }
+  if(checked.some(i=> i.value==='none') && checked.length>1){ alert('"전혀 없음"을 선택한 경우 다른 항목은 선택할 수 없습니다.'); return false; }
+  if(otherChecked && !otherText){ alert('기타를 선택하셨다면 내용을 입력해 주세요.'); return false; }
+  if(!zoomConsent){ alert('온라인 면담 참여 의향을 선택하세요.'); return false; }
+  if(!email){ alert('이메일을 입력하세요.'); return false; }
+  if(!phone){ alert('전화번호를 입력하세요.'); return false; }
+  if(!consent){ alert('연구 참여 동의를 체크해 주세요.'); return false; }
+  return true;
+}
 
-            // 토큰 유효성 검증
-            statusMessageDiv.className = 'status-message info';
-            statusMessageDiv.innerHTML = '토큰을 확인 중입니다...';
-            const checkResult = await callAppsScript(TOKEN_WEB_APP_URL, 'checkToken', currentToken);
+function attachNoneExclusive(){
+  const expOptions = document.querySelectorAll('#experience-options input[type="checkbox"]');
+  const noneOption = document.querySelector('#experience-options input[value="none"]');
+  expOptions.forEach(opt=>{
+    opt.addEventListener('change', ()=>{
+      if(noneOption.checked){ expOptions.forEach(o=>{ if(o!==noneOption) o.checked=false; }); }
+      else { if(opt!==noneOption) noneOption.checked=false; }
+    });
+  });
+}
 
-            if (!checkResult.ok) {
-                statusMessageDiv.className = 'status-message error';
-                statusMessageDiv.innerHTML = `토큰 확인 중 오류가 발생했습니다: ${checkResult.message || '알 수 없는 오류'}`;
-            } else {
-                if (checkResult.status === 'valid') {
-                    // 유효한 토큰, 설문 표시
-                    statusMessageDiv.classList.add('hidden'); // 상태 메시지 숨기기
-                    surveyMainContent.classList.remove('hidden'); // 설문 내용 보이기
-                    initializeQSorting(); // Q-Sorting 초기화 함수 호출
-                } else if (checkResult.status === 'used') {
-                    // 이미 사용된 토큰
-                    statusMessageDiv.className = 'status-message info';
-                    statusMessageDiv.innerHTML = '이미 이 토큰으로 설문에 참여하셨습니다. 중복 참여는 불가능합니다.';
-                } else if (checkResult.status === 'invalid') {
-                    // 유효하지 않거나 존재하지 않는 토큰
-                    statusMessageDiv.className = 'status-message error';
-                    statusMessageDiv.innerHTML = '유효하지 않거나 존재하지 않는 설문 토큰입니다. 올바른 주소로 접속해 주세요.';
-                } else {
-                    statusMessageDiv.className = 'status-message error';
-                    statusMessageDiv.innerHTML = '알 수 없는 토큰 상태입니다. 관리자에게 문의해 주세요.';
-                }
-            }
-        });
+function makeEl(tag, cls){ const e=document.createElement(tag); if(cls) e.className=cls; return e; }
+function getBucket(colEl){ return colEl.querySelector('.bucket'); }
+function capStatus(col){
+  const bucket = getBucket(col.el); if(!bucket) return;
+  const used = bucket.children.length;
+  const usednum = col.el.querySelector('.usednum'); if(!usednum) return;
+  usednum.textContent = used;
+  const cls = used===col.cap? 'count-ok' : (used<col.cap? 'count-warn':'count-bad');
+  usednum.className = 'usednum ' + cls; col.el.classList.toggle('over', used>col.cap);
+}
+function refreshAll(){ columns.forEach(capStatus); updateSummary(); }
 
-        // 설문 제출 시 토큰 사용 처리 (markUsed)
-        qSortForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // 폼의 기본 제출 동작 방지
+function createCardEl(card){
+  const el = makeEl('div','card'); el.draggable=true; el.dataset.id=card.id;
+  el.innerHTML = '<div class="small" style="opacity:.7">#'+card.id+'</div>'+card.text;
+  el.addEventListener('dragstart', e=>{ el.classList.add('dragging'); e.dataTransfer.setData('text/plain', String(card.id)); });
+  el.addEventListener('dragend', ()=> el.classList.remove('dragging'));
+  el.addEventListener('click', ()=>{
+    if(selectedCardId===card.id){ selectedCardId=null; el.style.outline=''; return; }
+    document.querySelectorAll('.card').forEach(c=> c.style.outline='');
+    selectedCardId=card.id; el.style.outline=`2px solid ${getComputedStyle(document.documentElement).getPropertyValue('--accent')}`;
+  });
+  return el;
+}
 
-            // Q 분류 데이터를 수집
-            const qSortingResults = collectQSortingResults();
-            if (!qSortingResults) return; // Q 분류 결과 수집 실패 또는 유효성 검사 실패
+function ensureCards(){
+  const poolListEl = document.getElementById('poolList');
+  poolListEl.innerHTML='';
+  cards.forEach(c=> poolListEl.appendChild(createCardEl(c)));
+  refreshAll();
+}
 
-            // 기존 HTML에는 Q 분류 외의 일반 데이터 필드가 없으므로 빈 객체로 전송
-            const generalData = {};
-            
-            console.log("Q 분류 설문 데이터 제출 시도:", generalData, qSortingResults);
-            
-            statusMessageDiv.classList.remove('hidden'); // 상태 메시지 영역 다시 보이게
-            statusMessageDiv.className = 'status-message info';
-            statusMessageDiv.innerHTML = '설문 내용을 제출하고 있습니다...';
-            surveyMainContent.classList.add('hidden'); // 설문 내용 숨기기
+function attachDnD(){
+  const zones = document.querySelectorAll('.dropzone');
+  zones.forEach(z=>{
+    z.addEventListener('dragover', e=>{ e.preventDefault(); z.classList.add('over'); });
+    z.addEventListener('dragleave', ()=> z.classList.remove('over'));
+    z.addEventListener('drop', e=>{ e.preventDefault(); z.classList.remove('over'); const id=+e.dataTransfer.getData('text/plain'); moveCardTo(id,z); });
+    z.addEventListener('click', ()=>{ if(selectedCardId!=null){ moveCardTo(selectedCardId,z); selectedCardId=null; document.querySelectorAll('.card').forEach(c=> c.style.outline=''); }});
+  });
+}
 
-            try {
-                // 1. Q방법론 응답 결과 데이터를 Q_SURVEY_DATA_SUBMIT_URL로 POST 전송
-                const response = await fetch(Q_SURVEY_DATA_SUBMIT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ token: currentToken, general: generalData, qSort: qSortingResults }),
-                    headers: { 'Content-Type': 'text/plain' } // Apps Script는 'application/json' 대신 'text/plain'을 선호
-                });
-                const responseData = await response.json();
+function moveCardTo(id, zone){
+  const cardEl = document.querySelector(`.card[data-id="${id}"]`); if(!cardEl) return;
+  const poolListEl = document.getElementById('poolList');
+  const targetBucket = zone.id==='pool' ? poolListEl : getBucket(zone);
+  if(zone.id!=='pool'){
+    const col = columns.find(c=> String(c.score)===zone.dataset.score);
+    if(getBucket(zone).children.length>=col.cap){ zone.classList.add('over'); setTimeout(()=> zone.classList.remove('over'), 300); return; }
+  }
+  targetBucket.appendChild(cardEl); refreshAll(); setUniformCardSize();
+}
 
-                if (!responseData.ok) {
-                    throw new Error(responseData.message || '설문 데이터 저장에 실패했습니다.');
-                }
+function updateSummary(){
+  const summaryEl = document.getElementById('summary');
+  if(!summaryEl) return;
+  const lines=[]; columns.forEach(c=>{ const b=getBucket(c.el); const ids=b?[...b.children].map(e=> e.dataset.id):[]; lines.push(`${c.score}: ${ids.join(', ')||'-'}`); });
+  const poolIds=[...document.getElementById('poolList').children].map(e=> e.dataset.id); lines.push(`미배치: ${poolIds.join(', ')||'-'}`); summaryEl.textContent=lines.join('\n');
+}
 
-                // 2. 설문 데이터 저장 성공 후, 토큰 사용 완료 처리 (TOKEN_WEB_APP_URL 사용)
-                const markUsedResult = await callAppsScript(TOKEN_WEB_APP_URL, 'markUsed', currentToken);
+function renderColumns(){
+  const rowElLocal = document.getElementById('row');
+  rowElLocal.innerHTML=''; columns=[];
+  const {scores,caps,labels} = PRESET_39;
+  scores.forEach((score,i)=>{
+    const col = makeEl('div','col dropzone');
+    col.dataset.score = score;
+    const head = makeEl('div','col-header');
+    const tag = makeEl('div','tag'); tag.textContent = labels[i];
+    const cap = makeEl('div','cap'); cap.innerHTML = `할당 <span class="capnum">${caps[i]}</span> / <span class="usednum">0</span>`;
+    head.append(tag,cap);
+    const bucket = makeEl('div','bucket');
+    col.append(head,bucket); rowElLocal.append(col);
+    columns.push({score, cap:caps[i], el:col});
+  });
+  attachDnD(); refreshAll();
+}
 
-                if (markUsedResult.ok) {
-                    statusMessageDiv.className = 'status-message success';
-                    statusMessageDiv.innerHTML = '설문 응답이 성공적으로 제출되었고, 토큰이 사용 완료 처리되었습니다. 소중한 의견 감사드립니다!';
-                } else {
-                    statusMessageDiv.className = 'status-message error';
-                    statusMessageDiv.innerHTML = `설문 데이터는 저장되었지만, 토큰 사용 처리 중 오류가 발생했습니다: ${markUsedResult.message || '알 수 없는 오류'}. 관리자에게 문의해 주세요.`;
-                    console.error("markUsed 실패:", markUsedResult);
-                }
-            } catch (error) {
-                console.error("설문 데이터 전송 또는 토큰 처리 중 오류 발생:", error);
-                statusMessageDiv.className = 'status-message error';
-                statusMessageDiv.innerHTML = `설문 제출 중 오류가 발생했습니다: ${error.message}. 관리자에게 문의해 주세요.`;
-            }
-        });
-        
-        // --- Q-Sorting 관련 JavaScript 함수 (initializeQSorting 등) ---
-        // 이 부분은 조경철2577님께서 제공해주신 Q-Sorting 기능을 위한 JavaScript 코드와 제가 추가했던 부분들이 합쳐져 있습니다.
-        function initializeQSorting() {
-            console.log("Q-Sorting 기능 초기화 중...");
-            
-            const qStatements = [
-                { id: 'q1', text: '교육과정은 학생들의 흥미를 최우선으로 반영해야 한다.' },
-                { id: 'q2', text: '교육과정은 사회적 요구와 미래 변화에 빠르게 대응해야 한다.' },
-                { id: 'q3', text: '교사는 교육과정을 자신의 교육 철학에 따라 자유롭게 재구성할 권리가 있다.' },
-                { id: 'q4', text: '교육과정은 국가의 기본적인 교육 목표와 가치를 명확히 제시해야 한다.' },
-                { id: 'q5', text: '학생들은 교육과정 개발과 운영 과정에 적극적으로 참여해야 한다.' },
-                { id: 'q6', text: '교육과정은 교사의 전문성을 발휘할 수 있는 여지를 충분히 제공해야 한다.' },
-                { id: 'q7', text: '교육과정은 평가의 공정성과 객관성을 확보하는 데 중점을 두어야 한다.' },
-                { id: 'q8', text: '교육과정은 다양한 문화적 배경을 가진 학생들을 포용해야 한다.' },
-                { id: 'q9', text: '기술 발전은 교육과정의 내용을 끊임없이 변화시켜야 한다.' },
-                { id: 'q10', text: '교육과정은 학생들에게 비판적 사고 능력을 함양시키는 데 주력해야 한다.' },
-                { id: 'q11', text: '교사의 역할은 교육과정에 명시된 내용을 정확하게 전달하는 것이다.' },
-                { id: 'q12', text: '교육과정은 창의성과 혁신을 위한 탐구 활동을 강조해야 한다.' },
-                { id: 'q13', text: '교육과정은 특정 과목 지식보다 전인적 성장을 위한 경험을 제공해야 한다.' },
-                { id: 'q14', text: '교육과정은 지역 사회의 특성과 요구를 반영하여 유연하게 운영되어야 한다.' },
-                { id: 'q15', text: '교육과정 개발 시 학생들의 의견 수렴 과정이 필수적이다.' },
-                { id: 'q16', text: '교사는 교육과정 재구성을 위해 지속적인 연수와 연구가 필요하다.' },
-                { id: 'q17', text: '교육과정은 결과 중심 평가보다 과정 중심 평가를 우선해야 한다.' },
-                { id: 'q18', text: '미래 사회를 대비하여 교육과정에 디지털 리터러시 교육을 강화해야 한다.' },
-                { id: 'q19', text: '교육과정은 학습 내용의 양보다는 질적 깊이를 추구해야 한다.' },
-                { id: 'q20', text: '교육과정은 학생들의 진로 탐색과 설계를 적극적으로 지원해야 한다.' },
-                { id: 'q21', text: '교육과정은 학교 간, 지역 간 학력 격차 해소에 기여해야 한다.' },
-                { id: 'q22', text: '교사는 교육과정 실행 시 발생하는 문제 상황을 적극적으로 해결해야 한다.' },
-                { id: 'q23', text: '교육과정은 학생들에게 자기 주도 학습 능력을 길러주는 방향으로 구성되어야 한다.' },
-                { id: 'q24', text: '교육과정은 다양한 교과를 통합하여 유기적으로 구성해야 한다.' },
-                { id: 'q25', text: '교육과정은 학생들에게 사회적 책임감과 시민 의식을 함양시켜야 한다.' },
-                { id: 'q26', text: '교사는 교육과정 운영의 자율성을 존중받아야 한다.' },
-                { id: 'q27', text: '교육과정은 급변하는 시대에 적응할 수 있는 유연성을 갖춰야 한다.' },
-                { id: 'q28', text: '교육과정은 인성 교육을 강화하고 가치관 형성에 도움을 주어야 한다.' },
-                { id: 'q29', text: '교육과정은 학생들의 건강한 신체 발달을 위한 내용을 포함해야 한다.' },
-                { id: 'q30', text: '교사는 교육과정 평가 결과에 따라 교육 방법을 개선해야 한다.' },
-                { id: 'q31', text: '교육과정은 국가 교육 목표 달성을 위한 구체적인 지침을 제공해야 한다.' },
-                { id: 'q32', text: '교육과정은 학생들의 잠재력을 최대한 발휘할 수 있도록 지원해야 한다.' },
-                { id: 'q33', text: '교육과정은 교과 지식 전달을 넘어 실생활 문제 해결 능력을 강조해야 한다.' },
-                { id: 'q34', text: '교사는 교육과정 관련 전문가들과 지속적으로 협력해야 한다.' },
-                { id: 'q35', text: '교육과정은 학생들이 비판적 시각으로 세상을 이해하도록 돕는 역할을 해야 한다.' }
-            ];
+function initPageHandlers(){
+  document.getElementById('nextBtn').addEventListener('click', ()=>{ if(validateRespondent()) showPage(2); });
+  document.getElementById('backBtn')?.addEventListener('click', ()=> showPage(1));
+  document.getElementById('resetBtn')?.addEventListener('click', ()=>{
+    document.querySelectorAll('.col .bucket').forEach(b=>{ [...b.children].forEach(card=> document.getElementById('poolList').appendChild(card)); });
+    refreshAll();
+  });
+  // 도움말 팝업
+  const helpBtn = document.getElementById('helpBtn');
+  const helpModal = document.getElementById('helpModal');
+  const helpClose = document.getElementById('helpClose');
+  if (helpBtn && helpModal && helpClose){
+    helpBtn.addEventListener('click', ()=> helpModal.classList.remove('hidden'));
+    helpClose.addEventListener('click', ()=> helpModal.classList.add('hidden'));
+    helpModal.querySelector('.modal__overlay').addEventListener('click', ()=> helpModal.classList.add('hidden'));
+  }
+  // Enter 키 방지 (page2)
+  document.addEventListener('keydown', (e)=>{
+    const onPage2 = !document.getElementById('page2').classList.contains('hidden');
+    if (onPage2 && e.key === 'Enter') { e.preventDefault(); }
+  });
+}
 
-            const poolList = document.getElementById('poolList');
-            poolList.innerHTML = ''; // 기존 내용 지우기
-            qStatements.forEach(statement => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.setAttribute('draggable', 'true');
-                card.setAttribute('data-id', statement.id);
-                card.textContent = statement.text;
-                poolList.appendChild(card);
-            });
+// === Google Sheets Integration ===
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhxw3kVbBBEJhPGAHXBxoL4S7vZKbqwCK5I5PeaeYEDLIO0u1l2VYwTpAMi-ywRem6og/exec";
 
-            // 드래그 앤 드롭 이벤트 리스너 설정
-            setupDragAndDrop();
-            updateCounts(); // 카드 개수 초기화
-        }
+function collectQsort(){
+  const results = [];
+  if (Array.isArray(columns)){
+    columns.forEach(c => {
+      const b = getBucket(c.el);
+      const nodes = b ? Array.from(b.children) : [];
+      nodes.forEach(node => {
+        const id = Number(node.dataset.id);
+        if (!Number.isNaN(id)) results.push({ id, score: Number(c.score) });
+      });
+    });
+  }
+  return results;
+}
 
-        // --- Q-Sorting 드래그 앤 드롭 및 카운트 업데이트 로직 ---
-        function setupDragAndDrop() {
-            const cards = document.querySelectorAll('.card');
-            const buckets = document.querySelectorAll('.bucket');
+async function submitToSheet(){
+  const submitBtn = document.getElementById('submitBtn');
+  const payload = {
+    career: (document.getElementById('career')?.value || "").trim(),
+    schoolLevel: (document.getElementById('schoolLevel')?.value || "").trim(),
+    experience: Array.from(document.querySelectorAll('input[name="experience"]:checked')).map(el => el.value),
+    experienceOther: (document.getElementById('otherExp')?.value || "").trim(),
+    zoomConsent: (document.getElementById('zoomConsent')?.value || "").trim(),
+    email: (document.getElementById('email')?.value || "").trim(),
+    phone: (document.getElementById('phone')?.value || "").trim(),
+    qsort: collectQsort()
+  };
+  try {
+    await fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
+    const thankModal = document.getElementById('thankModal');
+    if (thankModal) thankModal.classList.remove('hidden');
+    return true;
+  } catch (err) {
+    alert('네트워크 오류로 제출에 실패했습니다. 다시 시도해 주세요.');
+    if (submitBtn){ submitBtn.removeAttribute('disabled'); submitBtn.textContent = '제출'; }
+    if (typeof SUBMITTING !== 'undefined') SUBMITTING = false;
+    return false;
+  }
+}
 
-            cards.forEach(card => {
-                card.addEventListener('dragstart', dragStart);
-            });
+function bindSubmit(){
+  document.getElementById('submitBtn').addEventListener('click', ()=>{
+    if (SUBMITTING) return;
+    SUBMITTING = true;
+    const submitBtn = document.getElementById('submitBtn');
+    if (submitBtn){ submitBtn.setAttribute('disabled','true'); submitBtn.textContent = '제출 중...'; }
+    const unmet = columns.filter(c=> getBucket(c.el).children.length !== c.cap);
+    if(unmet.length>0){
+      alert('분포 용량을 정확히 맞춰 주세요.');
+      SUBMITTING = false;
+      if (submitBtn){ submitBtn.removeAttribute('disabled'); submitBtn.textContent = '제출'; }
+      return;
+    }
+    submitToSheet();
+  });
+}
 
-            buckets.forEach(bucket => {
-                bucket.addEventListener('dragover', dragOver);
-                bucket.addEventListener('dragleave', dragLeave);
-                bucket.addEventListener('drop', drop);
-            });
+(function thankModalToPage3(){
+  function bindConfirmToShowPage3(){
+    const confirmBtn = document.getElementById('thankClose') || document.querySelector('#thankModal button');
+    const thankModal = document.getElementById('thankModal');
+    const submitBtn = document.getElementById('submitBtn');
+    if (!confirmBtn || !thankModal) return false;
+    if (confirmBtn.__boundOK) return true;
+    confirmBtn.__boundOK = true;
+    confirmBtn.addEventListener('click', function(){
+      try {
+        thankModal.classList.add('hidden');
+        if (submitBtn){ submitBtn.textContent = '제출 완료'; submitBtn.disabled = true; }
+        const p1 = document.getElementById('page1');
+        const p2 = document.getElementById('page2');
+        const p3 = document.getElementById('page3');
+        if (p1) p1.classList.add('hidden');
+        if (p2) p2.classList.add('hidden');
+        if (p3) p3.classList.remove('hidden');
+        window.scrollTo(0,0);
+      } catch(e) { console.error('bindConfirmToShowPage3 error:', e); }
+    });
+    return true;
+  }
+  let cnt = 0;
+  const intervalID = setInterval(() => {
+    cnt++;
+    if (bindConfirmToShowPage3() || cnt > 20) { clearInterval(intervalID); }
+  }, 300);
+})();
+</script>
 
-            // 드래그 앤 드롭 기본 동작 설정: poolList도 드롭존으로 설정
-            const poolList = document.getElementById('poolList');
-            poolList.addEventListener('dragover', dragOver);
-            poolList.addEventListener('dragleave', dragLeave);
-            poolList.addEventListener('drop', drop);
+<section class="page hidden" id="page3">
+  <h2>제출 완료</h2>
+  <p>설문에 참여해 주셔서 감사합니다. 결과가 성공적으로 제출되었습니다.</p>
+</section>
 
+<script>
+// === 카드 풀 정렬 유지 ===
+(function(){
+  function getCardId(el){
+    if (!el) return Number.MAX_SAFE_INTEGER;
+    if (el.dataset && el.dataset.id !== undefined && el.dataset.id !== "") {
+      var n = Number(el.dataset.id);
+      if (!Number.isNaN(n)) return n;
+    }
+    var m = (el.textContent || "").match(/#\s*(\d+)/);
+    return m ? Number(m[1]) : Number.MAX_SAFE_INTEGER;
+  }
+  var sorting = false;
+  function sortPoolAscending(){
+    if (sorting) return;
+    var pool = document.getElementById('poolList');
+    if (!pool) return;
+    sorting = true;
+    var nodes = Array.prototype.slice.call(pool.children);
+    nodes.sort(function(a,b){ return getCardId(a) - getCardId(b); });
+    nodes.forEach(function(n){ pool.appendChild(n); });
+    sorting = false;
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    var pool = document.getElementById('poolList');
+    if (!pool) return;
+    sortPoolAscending();
+    var timer = null;
+    var obs = new MutationObserver(function(){
+      if (sorting) return;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(sortPoolAscending, 0);
+    });
+    obs.observe(pool, { childList: true });
+  });
+})();
+</script>
 
-            function dragStart(e) {
-                e.dataTransfer.setData('text/plain', e.target.dataset.id);
-                setTimeout(() => e.target.classList.add('dragging'), 0);
-            }
+<!-- === Token Validation Gate === -->
+<script>
+/**
+ * 간단한 토큰 게이트(클라이언트 사이드)
+ * - 배포 시, 각 응답자에게 ?t=개별토큰 형태의 URL을 발급하세요.
+ * - 아래 LOCAL_ALLOWED_TOKENS에 허용 토큰을 넣으면(권장), 해당 토큰만 접근 가능합니다.
+ * - 또는 Google Apps Script에서 action=validate를 구현해 서버 검증을 사용할 수도 있습니다.
+ *   예: GET `${APPS_SCRIPT_URL}?action=validate&token=...` 가 `{ ok: true }` 반환
+ *
+ * ⚠️ 주의: HTML 내부에 토큰 목록을 두는 방식은 강한 보안이 아닙니다. 링크 유출 방지용 1차 장치로 사용하세요.
+ */
+const LOCAL_ALLOWED_TOKENS = [
+  // 예시: "TCH-001-9b2e", "TCH-002-17aa"
+];
 
-            function dragOver(e) {
-                e.preventDefault(); // 드롭 허용
-                if (e.target.classList.contains('bucket') || e.target.id === 'poolList') {
-                     e.target.closest('.col')?.classList.add('over');
-                     if (e.target.id === 'poolList') {
-                         e.target.classList.add('over');
-                     }
-                }
-            }
+function getTokenFromURL(){
+  const u = new URL(location.href);
+  return u.searchParams.get('t') || '';
+}
 
-            function dragLeave(e) {
-                if (e.target.closest('.col')) {
-                    e.target.closest('.col').classList.remove('over');
-                }
-                 if (e.target.id === 'poolList') {
-                     e.target.classList.remove('over');
-                 }
-            }
+async function serverValidateToken(token){
+  try {
+    const res = await fetch(`${APPS_SCRIPT_URL}?action=validate&token=${encodeURIComponent(token)}`);
+    if (!res.ok) return false;
+    const data = await res.json();
+    return !!(data && (data.ok === true || data.valid === true));
+  } catch(e){ return false; }
+}
 
-            function drop(e) {
-                e.preventDefault();
-                const cardId = e.dataTransfer.getData('text/plain');
-                const draggedCard = document.querySelector(`.card[data-id="${cardId}"]`);
-                const targetBucket = e.target.closest('.bucket');
-                const targetCol = e.target.closest('.col');
-                
-                // 드래그 중인 카드 상태 초기화
-                if (draggedCard) {
-                    draggedCard.classList.remove('dragging');
-                }
-                document.querySelectorAll('.col.over, #poolList.over').forEach(el => el.classList.remove('over'));
+async function checkAccess(){
+  const gate = document.getElementById('gate');
+  const status = document.getElementById('gateStatus');
+  const app = document.getElementById('appRoot');
+  const token = getTokenFromURL();
+  if (!token){
+    status.textContent = '접속 토큰이 포함되지 않았습니다. 담당자에게 문의해 주세요.';
+    gate.classList.remove('hidden');
+    app.classList.add('hidden');
+    return false;
+  }
+  // 1) 로컬 허용 목록 우선
+  if (LOCAL_ALLOWED_TOKENS.length > 0){
+    if (LOCAL_ALLOWED_TOKENS.includes(token)){
+      gate.classList.add('hidden');
+      app.classList.remove('hidden');
+      initApp();
+      return true;
+    } else {
+      status.textContent = '유효하지 않은 토큰입니다. 링크를 다시 확인해 주세요.';
+      gate.classList.remove('hidden');
+      app.classList.add('hidden');
+      return false;
+    }
+  }
+  // 2) 서버 검증 (선택 사항)
+  status.textContent = '서버에서 토큰을 확인하는 중…';
+  const ok = await serverValidateToken(token);
+  if (ok){
+    gate.classList.add('hidden');
+    app.classList.remove('hidden');
+    initApp();
+    return true;
+  } else {
+    status.textContent = '유효하지 않은 토큰입니다. 링크를 다시 확인해 주세요.';
+    gate.classList.remove('hidden');
+    app.classList.add('hidden');
+    return false;
+  }
+}
 
+function initApp(){
+  // 초기 렌더링 및 이벤트 바인딩
+  renderColumns();
+  ensureCards();
+  setUniformCardSize();
+  showPage(1);
+  initPageHandlers();
+  attachNoneExclusive();
+  bindSubmit();
+}
 
-                if (targetBucket && targetCol) { // 특정 점수 버킷으로 드롭
-                    const score = parseInt(targetCol.dataset.score);
-                    const cap = parseInt(targetCol.querySelector('.cap').getAttribute('data-initial-cap'));
-                    
-                    if (targetBucket.children.length < cap) {
-                        targetBucket.appendChild(draggedCard);
-                        updateCounts();
-                    } else {
-                        alert(`이 칸은 ${cap}개의 카드만 수용할 수 있습니다.`);
-                    }
-                } else if (e.target.id === 'poolList' || e.target.closest('#poolList')) { // 카드 풀로 드롭
-                    poolList.appendChild(draggedCard);
-                    updateCounts();
-                } else {
-                     // 유효하지 않은 드롭 위치, 카드를 원래 위치로 돌리거나 아무것도 하지 않음.
-                     // 현재 구현은 드래그 시작 전 위치를 기억하지 않으므로, 이 경우 pool로 돌려보냄.
-                     poolList.appendChild(draggedCard);
-                     updateCounts();
-                }
-            }
-        }
-        
-        // 카드 개수 업데이트 및 시각화
-        function updateCounts() {
-            const poolList = document.getElementById('poolList');
-            const poolCountSpan = document.getElementById('poolCount');
-            const totalCards = 35; // 전체 카드 개수 (Q 진술문 개수)
-            
-            // poolList에 남아있는 카드 수 업데이트
-            poolCountSpan.textContent = totalCards - Array.from(document.querySelectorAll('.bucket .card')).length;
-
-            if (poolCountSpan.textContent === '0') {
-                poolCountSpan.className = 'count-ok';
-            } else if (parseInt(poolCountSpan.textContent) < 5) {
-                poolCountSpan.className = 'count-warn';
-            } else {
-                poolCountSpan.className = 'count-bad';
-            }
-
-            const cols = document.querySelectorAll('.col');
-            let allColsFilled = true;
-            cols.forEach(col => {
-                const score = parseInt(col.dataset.score);
-                const capElement = col.querySelector('.col-header .cap');
-                // cap 값을 data-initial-cap에서 가져오도록 수정
-                const cap = parseInt(capElement.getAttribute('data-initial-cap')); 
-                const current = col.querySelector('.bucket').children.length;
-                
-                capElement.textContent = `${current} / ${cap}개`; // 현재 카운트 / 최대 개수
-                if (current === cap) {
-                    capElement.className = 'cap count-ok';
-                } else {
-                    capElement.className = 'cap count-warn'; // 덜 채워졌거나 넘친 경우
-                    allColsFilled = false;
-                }
-            });
-
-            // 제출 버튼 활성화/비활성화 (모든 카드가 분류되고 모든 칸이 올바르게 채워졌을 때)
-            const submitBtn = document.getElementById('submitBtn');
-            const isAllQCardSorted = poolCountSpan.textContent === '0' && allColsFilled;
-            if (isAllQCardSorted) {
-                submitBtn.removeAttribute('disabled');
-            } else {
-                submitBtn.setAttribute('disabled', 'true');
-            }
-        }
-
-        // Q 분류 결과를 수집하여 반환하는 함수
-        function collectQSortingResults() {
-            const results = {};
-            const cols = document.querySelectorAll('.col');
-            let isValid = true; // 모든 칸이 올바르게 채워졌는지 확인
-
-            cols.forEach(col => {
-                const score = parseInt(col.dataset.score);
-                const cap = parseInt(col.querySelector('.cap').getAttribute('data-initial-cap'));
-                const cardsInBucket = Array.from(col.querySelector('.bucket').children);
-
-                if (cardsInBucket.length !== cap) {
-                    isValid = false; // 칸의 개수가 맞지 않음
-                    return;
-                }
-
-                cardsInBucket.forEach(card => {
-                    results[card.dataset.id] = score;
-                });
-            });
-
-            const poolList = document.getElementById('poolList');
-            if (poolList.children.length > 0) {
-                isValid = false; // 카드 풀에 카드가 남아있음
-            }
-            
-            if (!isValid) {
-                alert('모든 Q 진술문을 정확한 개수에 맞춰 분류해야 설문을 제출할 수 있습니다.');
-                return null;
-            }
-            return results;
-        }
-
-        // 최초 페이지 로드 시, .cap 요소에 data-initial-cap 속성 추가 (한번만 실행)
-        document.querySelectorAll('.col-header .cap').forEach(capElement => {
-            if (!capElement.hasAttribute('data-initial-cap')) {
-                const initialCapText = capElement.textContent.match(/\d+/); // "2개"에서 "2" 추출
-                if (initialCapText) {
-                    capElement.setAttribute('data-initial-cap', parseInt(initialCapText[0]));
-                }
-            }
-        });
-
-    </script>
+// 부팅
+document.addEventListener('DOMContentLoaded', checkAccess);
+</script>
 </body>
 </html>
