@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>교사의 교육과정 해석을 통한 의미 구성의 코드 유형 탐구(Q방법론)</title>
+<style>
+    :root{ --bg:#0f172a; --panel:#111827; --card:#1f2937; --muted:#94a3b8; --text:#e5e7eb; --accent:#6366f1; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Apple SD Gothic Neo,Noto Sans KR,sans-serif}
+    header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,rgba(15,23,42,.95),rgba(15,23,42,.6));backdrop-filter:blur(8px);border-bottom:1px solid #1f2937}
+    .wrap{max-width:1200px;margin:0 auto;padding:16px}
+    h1{font-size:20px;margin:0 0 6px}
+    .sub{color:var(--muted);font-size:13px}
+    .hidden{display:none}
+    button,select,input,textarea{background:var(--card);color:var(--text);border:1px solid #334155;border-radius:10px;padding:10px 12px;font-size:14px}
+    button{font-weight:700;cursor:pointer}
+    button[disabled]{opacity:.6;cursor:not-allowed}
+    button:hover{border-color:var(--accent)}
+    input,textarea,select{width:100%}
+    .grid{display:grid;grid-template-columns:320px 1fr;gap:16px;margin-top:12px}
+    #pool,.col{background:var(--panel);border:1px solid #2b3647;border-radius:12px}
+    #pool{padding:12px;min-height:220px}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+    .note{font-size:13px;color:var(--muted)}
+    .cols{display:grid;gap:10px}
+    .row{display:grid;gap:10px;grid-template-columns:repeat(9,1fr)}
+    .col{min-height: 80px;padding:8px;display:flex;flex-direction:column}
+    .col-header{display:flex;align-items:center;justify-content:space-between;padding:4px 6px;margin-bottom:6px;border-bottom:1px dashed #334155}
+    .tag{font-size:12px;color:var(--muted)}
+    .cap{font-size:12px}
+    .bucket{display:flex;flex-direction:column;gap:6px}
+    .card{font-size: 13px; background:var(--card);border:1px solid #334155;border-radius:12px;padding: 8px 10px;cursor:grab;margin-bottom:6px}
+    .card.dragging{opacity:.6}
+    .col.over{outline:2px dashed var(--accent);outline-offset:-4px}
+    .count-ok{color:var(--ok)}
+    .count-warn{color:var(--warn)}
+    .count-bad{color:var(--bad)}
+    .small{font-size:12px}
+    .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+    .chip{background:#0b1222;border:1px solid #2b3647;border-radius:999px;padding:2px 8px;font-size:12px}
+    .page{max-width:900px;margin:20px auto;padding:16px;background:var(--panel);border:1px solid #2b3647;border-radius:14px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{font-size:13px;color:var(--muted);display:block;margin:10px 0 6px}
+    .checkbox-group{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+    .checkbox-item{display:flex;align-items:center;gap:8px}
+    .checkbox-item input[type="checkbox"]{width:16px;height:16px;margin:0;vertical-align:middle}
+    .modal.hidden { display: none; }
+    .modal { position: fixed; inset: 0; z-index: 1000; }
+    .modal__overlay { position:absolute; inset:0; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); }
+    .modal__content { position:relative; max-width: 720px; margin: 8vh auto; background: var(--panel); border:1px solid #2b3647; border-radius: 12px; padding: 16px; }
+  #poolContainer { border-right: 1px dashed #ccc; }
+  #poolList { display:block; max-height:400px; overflow-y:auto; overflow-x:hidden; padding:8px; width:100%; box-sizing:border-box; scrollbar-gutter:stable; }
+  #poolList .card { display:block; width:100%; margin-bottom:8px; }
+#submitBtn { font-size:18px; font-weight:bold; padding:14px 22px; background:var(--accent); color:#fff; border-radius:12px; border:none; }
+#submitBtn:hover { background:#4338ca; }
+</style>
+<style>
+:root { --card-w: 240px; }
+@media (max-width: 1600px) { :root { --card-w: 220px; } }
+@media (max-width: 1440px) { :root { --card-w: 200px; } }
+@media (max-width: 1280px) { :root { --card-w: 180px; } }
+.page { max-width: 98vw !important; }
+.grid { grid-template-columns: clamp(200px, 18vw, 280px) 1fr !important; }
+.row { grid-template-columns: repeat(9, minmax(var(--card-w), 1fr)) !important; }
+#pool .card { width: var(--card-w); }
+.col .bucket .card { width: 100%; }
+.row { gap: 8px !important; }
+.cols { gap: 8px !important; }
+.modal.hidden { display: none; }
+.modal { position: fixed; inset: 0; z-index: 1000; }
+.modal__overlay { position:absolute; inset:0; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); }
+.modal__content { position:relative; max-width: 720px; margin: 8vh auto; background: var(--panel); border:1px solid #2b3647; border-radius: 12px; padding: 16px; }
+</style>
+<style>
+.help-btn { background:#6366f1; color:#fff; font-weight:bold; border:none; border-radius:6px; padding:6px 12px; cursor:pointer; transition:background .2s, transform .1s; }
+.help-btn:hover { background:#4f46e5; transform:scale(1.03); }
+</style>
+<style>
+.board { border:1px solid #2b3647; border-radius:12px; padding:12px; background:var(--panel); }
+</style>
+<style>
+.grid { position:relative; align-items:start; }
+.grid::after { content:""; position:absolute; top:0; bottom:0; left:clamp(200px, 18vw, 280px); border-left:2px dashed #334155; pointer-events:none; z-index:1; }
+.board { position:relative; overflow:hidden; background:var(--panel); border:1px solid #2b3647; border-radius:12px; padding:12px; }
+</style>
+<style>
+:root { --card-h: auto; }
+.card { height: var(--card-h); overflow:auto; }
+</style>
+<style>.col-header .tag { color:#ffffff; font-weight:bold; font-size:15px; }</style>
+<style>
+#page2 aside #pool #poolList { display:block !important; max-height:50vh !important; min-height:240px; overflow-y:auto !important; overflow-x:hidden !important; padding:8px; box-sizing:border-box; scrollbar-gutter:stable; }
+#page2 aside #pool #poolList .card { width:100% !important; }
+</style></head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>교사의 교육과정 해석을 통한 의미 구성의 코드 유형 탐구(Q방법론)</h1>
+    <div class="sub">
+      1단계에서 응답자 정보를 입력하고, 2단계에서 Q진술문 카드를 분포에 맞게 배치한 뒤 제출부탁드립니다.<br/>
+      제공해주신 개인 정보 및 응답 결과는 연구에만 사용되며, 연구 종료 즉시 폐기됩니다.
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- PAGE 1 -->
+  <section class="page" id="page1">
+    <h2 style="margin:0 0 12px">1단계: 응답자 정보를 입력하여 주세요.</h2>
+    <div>
+      <label for="career">선생님의 교직 경력을 선택하여 주세요. *</label>
+      <select id="career" required="">
+        <option value="">선택하세요</option>
+        <option value="under5">5년 미만</option>
+        <option value="5to10">5년 이상 ~ 10년 미만</option>
+        <option value="10to15">10년 이상 ~ 15년 미만</option>
+        <option value="15to20">15년 이상 ~ 20년 미만</option>
+        <option value="20to25">20년 이상 ~ 25년 미만</option>
+        <option value="25plus">25년 이상</option>
+      </select>
+    </div>
+    <div>
+      <label for="schoolLevel">선생님께서 현재 근무하고 계신 학교급을 선택하여 주세요. *</label>
+      <select id="schoolLevel" required="">
+        <option value="">선택하세요</option>
+        <option value="middle">중학교</option>
+        <option value="high">고등학교</option>
+      </select>
+    </div>
+
+    <div style="margin:14px 0">
+      <label>선생님께서는 아래와 같은 작업에 참여하신 적이 있나요? (복수 선택 가능, 전혀 없음 선택 시 다른 항목 선택 불가) *</label>
+      <div class="checkbox-group" id="experience-options">
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="curriculumDev"/> 국가수준 지리과 교육과정 개발 연구</label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="textbookAuth"/> 지리과 검·인정 교과서 집필(검토 포함)</label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="textbookReview"/> 지리과 교과서 검·인정 업무</label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="materialDev"/> 지리과 개정 교육과정 관련 교수·학습 및 평가 자료 개발</label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="trainingInstructor"/> 지리과 개정 교육과정 선도 교원 연수 강사</label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="curriculumLeader"/> 지리과 개정 교육과정 선도 교원</label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="plc"/> 지리 관련 전문적 교원 학습 공동체 활동(학교 안, 학교 밖 모두 포함)</label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="other"/> 기타: <input id="otherExp" placeholder="직접 입력" style="margin-left:6px;flex:1" type="text"/></label>
+        <label class="checkbox-item"><input name="experience" type="checkbox" value="none"/> 전혀 없음</label>
+      </div>
+    </div>
+
+    <div style="margin:14px 0">
+      <label>연구자의 설문 분석 후 각 코드 유형을 대표하는 선생님들을 대상으로 하는 온라인(줌) 면담이 진행될 수 있습니다. 면담 요청 시 많은 참여 부탁드립니다. 요청 시 면담 참여 가능하십니까? *</label>
+      <select id="zoomConsent" required="">
+        <option value="">선택하세요</option>
+        <option value="yes">참여할 의향이 있습니다.</option>
+        <option value="no">참여할 의향이 없습니다.</option>
+      </select>
+    </div>
+
+    <div style="margin-top:14px">
+      <label for="email">이메일 *</label>
+      <input id="email" required="" type="email"/>
+    </div>
+    <div>
+      <label for="phone">핸드폰 번호 *(설문 참여 감사 기프티콘 발송용)</label>
+      <input id="phone"/>
+    </div>
+
+    <div class="checkbox-group" style="margin-top:12px">
+      <label class="checkbox-item"><input id="consent" type="checkbox"/> 연구 참여에 동의합니다.</label>
+    </div>
+
+    <div class="toolbar">
+      <button id="nextBtn">다음 (정렬 단계로 이동)</button>
+    </div>
+  </section>
+
+  <!-- PAGE 2 -->
+  <section class="page hidden" id="page2">
+    <h2 style="margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      2단계: 선생님께서 Q진술문 카드를 읽어보신 후, 본인의 생각에 따라 ‘매우 비동의’에서부터 ‘매우 동의’ 사이의 위치에 알맞게 배치해 주세요.
+      <button class="help-btn" id="helpBtn">👉 Q진술문 배치 요령을 반드시 읽어주세요</button>
+    </h2>
+
+    <div class="modal hidden" id="helpModal">
+      <div class="modal__overlay"></div>
+      <div class="modal__content">
+        <h3 style="margin-top:0">Q진술문 배치 요령</h3>
+        <ul style="line-height:1.75">
+          <li>카드 배치 전 39개의 진술을 먼저 읽어주세요</li>
+          <li>양 극단(-4, 4)부터 배치하고 0을 마지막에 배치하면 편합니다.</li>
+          <li>각 단계별 수량을 맞춰야 제출 가능합니다.</li>
+        </ul>
+        <div style="text-align:right"><button id="helpClose">닫기</button></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <aside>
+        <h2 style="margin:8px 0 6px;font-size:16px">카드 풀(미배치)</h2>
+        <div class="dropzone" data-score="pool" id="pool">
+          <div class="note">여기에 놓으면 카드가 ‘미배치’ 상태가 됩니다.</div>
+          <div class="bucket" id="poolList"></div>
+        </div>
+        <details style="margin-top:10px">
+          <summary>현재 배치 요약</summary>
+          <div class="small" id="summary" style="margin-top:6px;white-space:pre-wrap"></div>
+        </details>
+        <div class="toolbar" style="margin-top:16px">
+          <button id="resetBtn">분포 초기화</button>
+          <button id="backBtn">뒤로 (응답자 정보)</button>
+          <button id="submitBtn">제출</button>
+        </div>
+      </aside>
+      <section>
+        <h2 style="margin:8px 0 6px;font-size:16px">Q소팅 분포도</h2>
+        <div class="board"><div class="cols"><div class="row" id="row"></div></div></div>
+      </section>
+    </div>
+
+    <div class="modal hidden" id="thankModal">
+      <div class="modal__overlay"></div>
+      <div class="modal__content">
+        <h3>설문 제출 완료</h3>
+        <p>설문에 참여해 주셔서 감사합니다.</p>
+        <div style="text-align:right; display:flex; gap:8px; justify-content:flex-end;">
+          <button id="thankClose">닫기</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ===== Token Validation via JSONP (CORS-free) ===== -->
+<script>
+(function(){
+  const TOKEN_API_URL = "https://script.google.com/macros/s/AKfycbzhxw3kVbBBEJhPGAHXBxoL4S7vZKbqwCK5I5PeaeYEDLIO0u1l2VYwTpAMi-ywRem6og/exec";
+
+  function getTokenFromURL(){
+    try{
+      const u = new URL(window.location.href);
+      return (u.searchParams.get('token') || u.searchParams.get('t') || '').trim();
+    }catch(_){ return ''; }
+  }
+
+  function jsonp(url, timeoutMs=6000){
+    return new Promise((resolve, reject)=>{
+      const cb = "__tokencb_" + Math.random().toString(36).slice(2);
+      window[cb] = (data)=>{ cleanup(); resolve(data); };
+      const s = document.createElement('script');
+      s.src = url + (url.includes('?')?'&':'?') + "callback=" + cb;
+      s.async = true;
+
+      const to = setTimeout(()=>{ cleanup(); reject(new Error("timeout")); }, timeoutMs);
+      s.onerror = ()=>{ cleanup(); reject(new Error("script-error")); };
+
+      function cleanup(){
+        clearTimeout(to);
+        if (s && s.parentNode) s.parentNode.removeChild(s);
+        try{ delete window[cb]; }catch(_){ window[cb] = undefined; }
+      }
+      document.head.appendChild(s);
+    });
+  }
+
+  async function verifyTokenOnce(){
+    const t = getTokenFromURL();
+    if(!t){ window.__TOKEN_VALID__ = false; window.__TOKEN_STATUS__ = 'missing'; return; }
+    try{
+      const url = TOKEN_API_URL + "?action=checkToken&token=" + encodeURIComponent(t);
+      const data = await jsonp(url);
+      if (data && data.ok && data.status === 'valid'){
+        window.__TOKEN_VALID__ = true;  window.__TOKEN_STATUS__ = 'valid';
+      } else if (data && data.status === 'used'){
+        window.__TOKEN_VALID__ = false; window.__TOKEN_STATUS__ = 'used';
+      } else {
+        window.__TOKEN_VALID__ = false; window.__TOKEN_STATUS__ = 'invalid';
+      }
+    }catch(e){
+      window.__TOKEN_VALID__ = false; window.__TOKEN_STATUS__ = 'error';
+    }
+  }
+
+  window.__TOKEN_VALID__ = false;
+  window.__TOKEN_STATUS__ = 'checking';
+  verifyTokenOnce();
+
+  window.__ensureTokenOK__ = async function(){
+    if (window.__TOKEN_STATUS__ === 'checking'){
+      await new Promise(r=> setTimeout(r, 200));
+    }
+    if (window.__TOKEN_VALID__ === true) return true;
+    const st = window.__TOKEN_STATUS__;
+    if (st === 'missing'){
+      alert('초대 메일로 받은 개인 전용 링크로 접속해 주세요. (토큰 없음)');
+    } else if (st === 'used'){
+      alert('이미 사용된 링크입니다. 설문을 다시 진행할 수 없습니다.');
+    } else if (st === 'invalid'){
+      alert('유효하지 않은 링크입니다. 초대 메일의 링크를 다시 확인해 주세요.');
+    } else {
+      alert('링크 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    }
+    return false;
+  };
+})();
+</script>
+
+<script>
+// === Uniform card height ===
+function setUniformCardSize(){
+  document.querySelectorAll('.card').forEach(c=>{ c.style.height='auto'; });
+  let maxH = 0;
+  document.querySelectorAll('.card').forEach(c=>{ maxH = Math.max(maxH, c.offsetHeight); });
+  if(maxH < 56) maxH = 56;
+  document.documentElement.style.setProperty('--card-h', maxH + 'px');
+}
+window.addEventListener('resize', ()=> setUniformCardSize());
+</script>
+
+<script>
+/* ===== 아래 영역은 원래 사용하신 Q-sort 보드 렌더/드래그/제출 로직을 그대로 유지 ===== */
+</script>
+
+<!-- Google Sheets Integration -->
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhxw3kVbBBEJhPGAHXBxoL4S7vZKbqwCK5I5PeaeYEDLIO0u1l2VYwTpAMi-ywRem6og/exec";
+function collectQsort(){
+  const results = [];
+  if (Array.isArray(columns)){
+    columns.forEach(c => {
+      const b = getBucket(c.el);
+      const nodes = b ? Array.from(b.children) : [];
+      nodes.forEach(node => {
+        const id = Number(node.dataset.id);
+        if (!Number.isNaN(id)) results.push({ id, score: Number(c.score) });
+      });
+    });
+  }
+  return results;
+}
+async function submitToSheet(){
+  const submitBtn = document.getElementById('submitBtn');
+  const payload = {
+    career: (document.getElementById('career')?.value || "").trim(),
+    schoolLevel: (document.getElementById('schoolLevel')?.value || "").trim(),
+    experience: Array.from(document.querySelectorAll('input[name="experience"]:checked')).map(el => el.value),
+    experienceOther: (document.getElementById('otherExp')?.value || "").trim(),
+    zoomConsent: (document.getElementById('zoomConsent')?.value || "").trim(),
+    email: (document.getElementById('email')?.value || "").trim(),
+    phone: (document.getElementById('phone')?.value || "").trim(),
+    qsort: collectQsort()
+  };
+  try {
+    await fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
+    const thankModal = document.getElementById('thankModal');
+    if (thankModal) thankModal.classList.remove('hidden');
+    return true;
+  } catch (err) {
+    alert('네트워크 오류로 제출에 실패했습니다. 다시 시도해 주세요.');
+    if (submitBtn){ submitBtn.removeAttribute('disabled'); submitBtn.textContent = '제출'; }
+    if (typeof SUBMITTING !== 'undefined') SUBMITTING = false;
+    return false;
+  }
+}
+</script>
+
+<section class="page hidden" id="page3">
+  <h2>제출 완료</h2>
+  <p>설문에 참여해 주셔서 감사합니다. 결과가 성공적으로 제출되었습니다.</p>
+</section>
+
+<script>
+(function(){
+  function bindConfirmToShowPage3(){
+    const confirmBtn = document.getElementById('thankClose') || document.querySelector('#thankModal button');
+    const thankModal = document.getElementById('thankModal');
+    const submitBtn = document.getElementById('submitBtn');
+    if (!confirmBtn || !thankModal) return false;
+    if (confirmBtn.__boundOK) return true;
+    confirmBtn.__boundOK = true;
+    confirmBtn.addEventListener('click', function(){
+      try {
+        thankModal.classList.add('hidden');
+        if (submitBtn){ submitBtn.textContent = '제출 완료'; submitBtn.disabled = true; }
+        const p1 = document.getElementById('page1');
+        const p2 = document.getElementById('page2');
+        const p3 = document.getElementById('page3');
+        if (p1) p1.classList.add('hidden');
+        if (p2) p2.classList.add('hidden');
+        if (p3) p3.classList.remove('hidden');
+        window.scrollTo(0,0);
+      } catch(e) { console.error('bindConfirmToShowPage3 error:', e); }
+    });
+    return true;
+  }
+  let cnt = 0;
+  const intervalID = setInterval(() => {
+    cnt++;
+    if (bindConfirmToShowPage3() || cnt > 20) { clearInterval(intervalID); }
+  }, 300);
+})();
+</script>
+</body>
+</html>
