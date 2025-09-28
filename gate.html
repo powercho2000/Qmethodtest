@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>설문 접근 확인 (Gate - Fast Redirect)</title>
+  <title>설문 접근 확인 (Gate)</title>
   <meta name="robots" content="noindex" />
   <style>
     :root { --border:#e5e7eb; --muted:#6b7280; }
@@ -28,7 +28,7 @@
       <p id="desc">개인용 링크 토큰을 확인하고 있습니다…</p>
 
       <div id="ok" class="hidden">
-        <p class="status-ok">확인되었습니다. 아래 버튼을 누르면 설문이 시작됩니다.<br/>(버튼을 누르는 즉시 1회 사용 처리됩니다)</p>
+        <p class="status-ok">확인되었습니다. 아래 버튼을 누르면 설문이 시작됩니다.</p>
         <div class="actions">
           <button id="startBtn" class="btn-primary">설문 시작하기</button>
         </div>
@@ -45,8 +45,8 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwBe-9UPK_WaYrw9F73iYjwLif36PEKl9jbqRRivnS-YA1jyaEe4OHT5mP6qlbqYiLDaw/exec";     // Apps Script Web App URL
-    const SURVEY_PAGE = "https://powercho2000.github.io/Qmethodtest/form.html";     // 설문 본문 URL
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwBe-9UPK_WaYrw9F73iYjwLif36PEKl9jbqRRivnS-YA1jyaEe4OHT5mP6qlbqYiLDaw/exec";     
+    const SURVEY_PAGE = "https://powercho2000.github.io/Qmethodtest/form.html";     
 
     const qs = new URLSearchParams(location.search);
     const token = (qs.get('token') || '').trim();
@@ -57,16 +57,10 @@
     const elInvalid = document.getElementById('invalid');
     const startBtn  = document.getElementById('startBtn');
 
-    function jsonpFireAndForget(url){ // 콜백 대기 없이 호출만
-      const cb = "cb_" + Math.random().toString(36).slice(2);
-      const s  = document.createElement('script');
-      s.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb + '&_ts=' + Date.now();
-      document.body.appendChild(s);
-    }
-    function jsonp(url){ // 검사 용도 (valid/used)
+    function jsonp(url){
       return new Promise((resolve)=>{
         const cb="cb_"+Math.random().toString(36).slice(2);
-        window[cb]=(res)=>{ try{ resolve(res); } finally { delete window[cb]; } };
+        window[cb]=(res)=>{ try{ resolve(res);} finally{ delete window[cb]; } };
         const s=document.createElement('script');
         s.src=url+(url.includes('?')?'&':'?')+'callback='+cb+'&_ts='+Date.now();
         s.onerror=()=>resolve({ok:false,status:'error'});
@@ -76,6 +70,7 @@
 
     (async function init(){
       if (!token){ elDesc.textContent = "토큰이 없습니다."; elInvalid.classList.remove('hidden'); return; }
+
       const res = await jsonp(WEB_APP_URL + `?action=checkToken&token=${encodeURIComponent(token)}`);
       if(!res || res.ok === false){ elDesc.textContent = "유효하지 않은 링크입니다."; elInvalid.classList.remove('hidden'); return; }
       if(res.status === 'used'){ elDesc.textContent = "이미 사용된 링크입니다."; elUsed.classList.remove('hidden'); return; }
@@ -84,12 +79,10 @@
       elDesc.textContent = "확인되었습니다.";
       elOK.classList.remove('hidden');
       startBtn.onclick = () => { 
-        startBtn.disabled = true; startBtn.classList.add('btn-disabled'); startBtn.textContent = "잠시만요…";
-        // markUsed를 '발사 후 잊기'로 호출하고, 즉시 이동
-        jsonpFireAndForget(WEB_APP_URL + `?action=markUsed&token=${encodeURIComponent(token)}`);
+        // 토큰 사용(markUsed) 호출 제거 → form.html에서 최종 제출 시점에만 사용 처리
         const url = new URL(SURVEY_PAGE);
         url.searchParams.set('token', token);
-        setTimeout(() => { location.href = url.toString(); }, 50);
+        location.href = url.toString();
       };
     })();
   </script>
