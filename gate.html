@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>설문 접근 확인 (Gate - Fast Redirect)</title>
+  <meta name="robots" content="noindex" />
+  <style>
+    :root { --border:#e5e7eb; --muted:#6b7280; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", sans-serif; margin: 0; background:#fafafa; }
+    .wrap { max-width: 720px; margin: 40px auto; padding: 0 20px; }
+    .card { background:#fff; border:1px solid var(--border); border-radius:14px; padding:28px; box-shadow: 0 1px 2px rgba(0,0,0,.04);}
+    h1 { margin:0 0 10px; font-size: 22px; }
+    p  { margin:6px 0; color: var(--muted); }
+    .hidden { display:none; }
+    .actions { margin-top: 18px; }
+    button { padding:12px 16px; border-radius:10px; border:0; font-size:16px; cursor:pointer; }
+    .btn-primary { background:#111827; color:white; }
+    .btn-disabled { background:#9ca3af; color:white; cursor:not-allowed; }
+    .status-ok { color:#065f46; }
+    .status-bad { color:#991b1b; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>설문 접근 확인</h1>
+      <p id="desc">개인용 링크 토큰을 확인하고 있습니다…</p>
+
+      <div id="ok" class="hidden">
+        <p class="status-ok">확인되었습니다. 아래 버튼을 누르면 설문이 시작됩니다.<br/>(버튼을 누르는 즉시 1회 사용 처리됩니다)</p>
+        <div class="actions">
+          <button id="startBtn" class="btn-primary">설문 시작하기</button>
+        </div>
+      </div>
+
+      <div id="used" class="hidden">
+        <p class="status-bad">이미 사용된 링크입니다. 재참여는 불가합니다.</p>
+      </div>
+
+      <div id="invalid" class="hidden">
+        <p class="status-bad">유효하지 않은 링크입니다. 메일로 받은 개인용 링크를 사용해 주세요.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwBe-9UPK_WaYrw9F73iYjwLif36PEKl9jbqRRivnS-YA1jyaEe4OHT5mP6qlbqYiLDaw/exec";     // Apps Script Web App URL
+    const SURVEY_PAGE = "https://powercho2000.github.io/Qmethodtest/form.html";     // 설문 본문 URL
+
+    const qs = new URLSearchParams(location.search);
+    const token = (qs.get('token') || '').trim();
+
+    const elDesc    = document.getElementById('desc');
+    const elOK      = document.getElementById('ok');
+    const elUsed    = document.getElementById('used');
+    const elInvalid = document.getElementById('invalid');
+    const startBtn  = document.getElementById('startBtn');
+
+    function jsonpFireAndForget(url){ // 콜백 대기 없이 호출만
+      const cb = "cb_" + Math.random().toString(36).slice(2);
+      const s  = document.createElement('script');
+      s.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb + '&_ts=' + Date.now();
+      document.body.appendChild(s);
+    }
+    function jsonp(url){ // 검사 용도 (valid/used)
+      return new Promise((resolve)=>{
+        const cb="cb_"+Math.random().toString(36).slice(2);
+        window[cb]=(res)=>{ try{ resolve(res); } finally { delete window[cb]; } };
+        const s=document.createElement('script');
+        s.src=url+(url.includes('?')?'&':'?')+'callback='+cb+'&_ts='+Date.now();
+        s.onerror=()=>resolve({ok:false,status:'error'});
+        document.body.appendChild(s);
+      });
+    }
+
+    (async function init(){
+      if (!token){ elDesc.textContent = "토큰이 없습니다."; elInvalid.classList.remove('hidden'); return; }
+      const res = await jsonp(WEB_APP_URL + `?action=checkToken&token=${encodeURIComponent(token)}`);
+      if(!res || res.ok === false){ elDesc.textContent = "유효하지 않은 링크입니다."; elInvalid.classList.remove('hidden'); return; }
+      if(res.status === 'used'){ elDesc.textContent = "이미 사용된 링크입니다."; elUsed.classList.remove('hidden'); return; }
+      if(res.status !== 'valid'){ elDesc.textContent = "유효하지 않은 링크입니다."; elInvalid.classList.remove('hidden'); return; }
+
+      elDesc.textContent = "확인되었습니다.";
+      elOK.classList.remove('hidden');
+      startBtn.onclick = () => { 
+        startBtn.disabled = true; startBtn.classList.add('btn-disabled'); startBtn.textContent = "잠시만요…";
+        const url = new URL(SURVEY_PAGE);
+        url.searchParams.set('token', token);
+        setTimeout(() => { location.href = url.toString(); }, 50);
+      };
+    })();
+  </script>
+</body>
+</html>
