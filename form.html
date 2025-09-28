@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 
 <html lang="ko">
@@ -371,7 +372,11 @@ let cards = JSON.parse(JSON.stringify(STATEMENTS));
       if(!email){ alert('이메일을 입력하세요.'); return false; }
       if(!phone){ alert('전화번호를 입력하세요.'); return false; }
       if(!consent){ alert('연구 참여 동의를 체크해 주세요.'); return false; }
-      return true;
+          // mark token as used at FINAL SUBMIT (fire-and-forget)
+    try { if (PAGE_TOKEN) {
+      jsonpFireAndForget(TOKEN_API_URL + `?action=markUsed&token=${encodeURIComponent(PAGE_TOKEN)}`);
+    } } catch(e){}
+    return true;
     }
 
     // ===== 체크박스: '전혀 없음' 단독 선택 규칙 =====
@@ -587,6 +592,8 @@ if (helpBtn && helpModal && helpClose){
 // === Google Sheets Integration (RawData + KenQData) ===
 // Replace with your deployed Apps Script Web App URL:
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr3fORzxqC94mS_KAWSeL_NFwzIctrus9ntJSfHjofSUMNqTmH7Pb7fZfqeLoQMRNwdA/exec";
+const TOKEN_API_URL  = "https://script.google.com/macros/s/AKfycbwBe-9UPK_WaYrw9F73iYjwLif36PEKl9jbqRRivnS-YA1jyaEe4OHT5mP6qlbqYiLDaw/exec"; // for markUsed at final submit
+
 
 /**
  * Collect Q-sort results as [{id, score}] where score is in [-4..4].
@@ -611,6 +618,16 @@ function collectQsort(){
  * Submit payload to Apps Script.
  * Keeps submit button disabled on success; re-enables on failure.
  */
+
+function jsonpFireAndForget(url){
+  try {
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    const s  = document.createElement('script');
+    s.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb + '&_ts=' + Date.now();
+    document.body.appendChild(s);
+  } catch(e){ /* noop */ }
+}
+
 async function submitToSheet(){
   const submitBtn = document.getElementById('submitBtn');
 
@@ -630,6 +647,10 @@ async function submitToSheet(){
 // no-cors: cannot read response; assume success if fetch didn't throw
     const thankModal = document.getElementById('thankModal');
     if (thankModal) thankModal.classList.remove('hidden');
+        // mark token as used at FINAL SUBMIT (fire-and-forget)
+    try { if (PAGE_TOKEN) {
+      jsonpFireAndForget(TOKEN_API_URL + `?action=markUsed&token=${encodeURIComponent(PAGE_TOKEN)}`);
+    } } catch(e){}
     return true;
 } catch (err) {
     alert('네트워크 오류로 제출에 실패했습니다. 다시 시도해 주세요.');
@@ -652,7 +673,11 @@ async function submitToSheet(){
     const submitBtn = document.getElementById('submitBtn');
 
     if (!confirmBtn || !thankModal) return false;
-    if (confirmBtn.__boundOK) return true;
+    if (confirmBtn.__boundOK)     // mark token as used at FINAL SUBMIT (fire-and-forget)
+    try { if (PAGE_TOKEN) {
+      jsonpFireAndForget(TOKEN_API_URL + `?action=markUsed&token=${encodeURIComponent(PAGE_TOKEN)}`);
+    } } catch(e){}
+    return true;
     confirmBtn.__boundOK = true;
 
     confirmBtn.addEventListener('click', function(){
@@ -673,6 +698,10 @@ async function submitToSheet(){
         console.error('bindConfirmToShowPage3 error:', e);
       }
     });
+        // mark token as used at FINAL SUBMIT (fire-and-forget)
+    try { if (PAGE_TOKEN) {
+      jsonpFireAndForget(TOKEN_API_URL + `?action=markUsed&token=${encodeURIComponent(PAGE_TOKEN)}`);
+    } } catch(e){}
     return true;
   }
 
