@@ -85,6 +85,7 @@
       elOK.classList.remove('hidden');
       startBtn.onclick = () => { 
         startBtn.disabled = true; startBtn.classList.add('btn-disabled'); startBtn.textContent = "잠시만요…";
+        // markUsed를 '발사 후 잊기'로 호출하고, 즉시 이동
         const url = new URL(SURVEY_PAGE);
         url.searchParams.set('token', token);
         setTimeout(() => { location.href = url.toString(); }, 50);
@@ -123,12 +124,10 @@
     var p=document.getElementById("gate-token-msg");
     if (p && msg) p.textContent = msg;
     if (ov){ ov.style.display="flex"; }
-    // Disable start button if present
     try{
       var btn = document.getElementById("startBtn") || document.querySelector("[data-role='start'], .start-btn, button.start");
       if (btn){ btn.disabled = true; btn.classList.add("btn-disabled"); }
     }catch(_){}
-    // Soft-block all links/buttons
     try{
       document.querySelectorAll("a,button,input,select,textarea").forEach(function(el){
         if (el.tagName==="A"){ el.href="javascript:void(0)"; el.onclick=function(e){e.preventDefault();}; }
@@ -137,7 +136,6 @@
     }catch(_){}
   }
   function allow(){
-    // enable start if previously disabled by default
     try{
       var btn = document.getElementById("startBtn") || document.querySelector("[data-role='start'], .start-btn, button.start");
       if (btn){ btn.disabled = false; btn.classList.remove("btn-disabled"); }
@@ -148,13 +146,14 @@
     var token = getToken();
     if (!token){
       block("토큰이 없습니다. 메일의 개인 전용 링크로 접속해 주세요.");
+      window.__TOKEN_GATE_BLOCKED__ = true;
       return;
     }
     if (typeof WEB_APP_URL !== "string" || !WEB_APP_URL){
       block("시스템 설정 오류로 진행할 수 없습니다. 관리자에게 문의해 주세요.");
+      window.__TOKEN_GATE_BLOCKED__ = true;
       return;
     }
-    // call check
     var url = WEB_APP_URL + "?action=checkToken&token=" + encodeURIComponent(token);
     jsonp(url, function(res){
       try{
@@ -171,7 +170,7 @@
         // valid
         window.__TOKEN_GATE_BLOCKED__ = false;
         allow();
-        // Also guard click handler if code uses it
+        // guard click from bypass
         try{
           var btn = document.getElementById("startBtn") || document.querySelector("[data-role='start'], .start-btn, button.start");
           if (btn){
