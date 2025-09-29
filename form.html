@@ -206,7 +206,194 @@
 #page2 aside #pool #poolList .card {
   width: 100% !important;
 }
-</style></head>
+</style>
+<style>
+/* ===== V3 Tweaks: maximize visible columns on 16:9 without enlarging cards ===== */
+
+/* Use almost full browser width for the main content */
+main.wrap {
+  max-width: 98vw !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+/* Reduce left sidebar width to free space for the board */
+#page2 .grid {
+  grid-template-columns: clamp(160px, 14vw, 220px) 1fr !important;
+}
+
+/* Make each column's min width smaller so more columns fit horizontally */
+:root { --card-w: 160px !important; }
+@media (max-width: 1440px) { :root { --card-w: 150px !important; } }
+@media (max-width: 1280px) { :root { --card-w: 140px !important; } }
+
+/* Tighten inner paddings and gaps */
+#page2 aside { padding: 10px !important; }
+#page2 section .board { padding: 8px !important; }
+.row { gap: 6px !important; }
+.cols { gap: 6px !important; }
+
+/* Optional: minimize page outer margins so board can use width */
+#page2.page {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+</style>
+
+
+<style>
+/* ===== V4 Tweaks per user request ===== */
+
+/* 1) Remove dashed divider between card pool and board (globally) */
+.grid::after { display: none !important; }
+
+/* 2) Make '할당 x / y' font-size equal to the tag line text */
+.col-header { align-items: center; gap: 8px; }
+.col-header .cap { font-size: 15px !important; } /* match .tag(15px) */
+.col-header .tag { font-size: 15px !important; }
+
+/* 3) Color rule for used count: red until complete, green when complete */
+/* Override existing warn color (was orange) to red */
+.count-warn { color: #ef4444 !important; }  /* used < cap -> red */
+.count-ok   { color: #22c55e !important; }  /* used == cap -> green */
+.count-bad  { color: #ef4444 !important; }  /* used > cap -> red (unchanged) */
+
+/* Optional: make the fraction look a bit bolder for readability */
+.col-header .cap .capnum, .col-header .cap .usednum { font-weight: 700; }
+</style>
+
+
+<style>
+/* ===== V5: Re-add dashed divider and header line-break ===== */
+
+/* 1) Re-add dashed divider between aside and board on Page 2.
+   Match the current grid split width (clamp(160px,14vw,220px)). */
+#page2 .grid {
+  position: relative; /* ensure pseudo element positions correctly */
+}
+#page2 .grid::after {
+  display: block !important;
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  left: clamp(160px, 14vw, 220px);
+  border-left: 2px dashed #334155;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 2) Make column header stack on two lines:
+   First line: label (-4 (매우 비동의))
+   Second line: 할당 x / y */
+.col-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.col-header .tag { line-height: 1.2; }
+.col-header .cap { line-height: 1.2; }
+</style>
+
+
+<style>
+/* ===== V6: Center-align distribution headers (label and cap) ===== */
+.col-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center !important;  /* center horizontally */
+  justify-content: center;
+  text-align: center;              /* ensure inner text is centered */
+}
+
+.col-header .tag,
+.col-header .cap {
+  width: 100%;
+  text-align: center !important;
+}
+</style>
+
+
+<style>
+/* ===== V8: Toast notification + shake animation ===== */
+@keyframes shakeX {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+.col.shake {
+  animation: shakeX 0.5s ease;
+}
+
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  max-width: 80vw;
+  background: #991b1b;
+  color: #fff;
+  border: 1px solid #ef4444;
+  border-radius: 10px;
+  padding: 10px 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.3);
+  opacity: 0;
+  transition: opacity .2s ease, transform .2s ease;
+  z-index: 2000;
+  pointer-events: none;
+  font-size: 14px;
+  line-height: 1.4;
+}
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+</style>
+
+
+<style>
+/* ===== V11: Emphasized bullet for final help line ===== */
+#helpModal .help-extra {
+  margin: 8px 0 0 18px;   /* align with typical bullet indent */
+  padding: 0;
+  line-height: 1.75;
+}
+#helpModal .help-extra li {
+  list-style: disc;
+  color: var(--warn);    /* emphasize with accent color */
+  font-weight: 700;        /* bold for emphasis */
+}
+</style>
+
+
+<style>
+/* ===== V12: Consistent alignment in Help modal ===== */
+/* Normalize bullet indentation for all ULs in help modal */
+#helpModal .modal__content ul {
+  padding-left: 22px !important;  /* common indent for bullet text */
+  margin-left: 0 !important;
+  list-style-position: outside;
+}
+
+/* Emphasized final line bullet: align exactly like other bullets */
+#helpModal .help-extra {
+  margin-left: 0 !important;
+  padding-left: 22px !important;  /* match ul padding */
+}
+#helpModal .help-extra li {
+  list-style: disc;
+  color: var(--warn);
+  font-weight: 700;
+}
+
+/* Distribution text block (-4 … → N개) align with bullet text start */
+#helpModal .modal__content > div[style*="margin:10px 0 14px"] {
+  margin-left: 22px !important;  /* align with ul bullet text start */
+}
+</style>
+
+</head>
 <body>
 <header>
 <div class="wrap">
@@ -254,8 +441,8 @@
 <label>연구자의 설문 분석 후 각 코드 유형을 대표하는 선생님들을 대상으로 하는 온라인(줌) 면담이 진행될 수 있습니다. 면담 요청 시 많은 참여 부탁드립니다. 요청 시 면담 참여 가능하십니까? *</label>
 <select id="zoomConsent" required="">
 <option value="">선택하세요</option>
-<option value="yes">참여할 의향이 있습니다.</option>
-<option value="no">참여할 의향이 없습니다.</option>
+<option value="yes">참여 가능합니다.</option>
+<option value="no">참여 불가능합니다.</option>
 </select>
 </div>
 <!-- 4) 이메일 & 전화번호(다음 줄) -->
@@ -269,7 +456,7 @@
 </div>
 <!-- 5) 연구 동의: 왼쪽 체크박스 + 한 줄 -->
 <div class="checkbox-group" style="margin-top:12px">
-<label class="checkbox-item"><input id="consent" type="checkbox"/> 연구 참여에 동의합니다.</label>
+<label class="checkbox-item"><input id="consent" type="checkbox"/> 개인 정보 제공에 동의하며, 연구 설문 조사에 참여합니다.</label>
 </div>
 <div class="toolbar">
 <button id="nextBtn">다음 (정렬 단계로 이동)</button>
@@ -278,7 +465,8 @@
 <!-- PAGE 2 -->
 <section class="page hidden" id="page2">
 <h2 style="margin:0 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">2단계: 선생님께서 Q진술문 카드를 읽어보신 후, 본인의 생각에 따라 ‘매우 비동의’에서부터 ‘매우 동의’ 사이의 위치에 알맞게 배치해 주세요.<button class="help-btn" id="helpBtn">👉 Q진술문 배치 요령을 반드시 읽어주세요</button></h2>
-<div class="modal hidden" id="helpModal"> <div class="modal__overlay"></div> <div class="modal__content"> <h3 style="margin-top:0">Q진술문 배치 요령</h3> <ul style="line-height:1.75"> <li>각 카드의 진술은 교사의 국가수준 교육과정 해석과 관련한 교사의 인식, 태도들 담고 있습니다. 카드 배치 전 39개의 진술을 먼저 읽어주세요</li> <li>카드 진술문에 대한 선생님의 동의, 미동의 정도에 따라 카드를 옮겨주시면 됩니다.</li> <li>양 극단에 해당하는 매우 비동의, 매우 동의 하는 진술부터 배치하시고 중립(판단 보류)에 해당하는 진술을 마지막에 배치하시면 응답하기가 편리하실 것입니다.</li> <li>카드 배치를 수정하고 싶으실 경우, 옮기실 카드를 카드 풀로 옮기시면 됩니다. 처음부터 다시 진행하시고 싶으실 경우, 분포 초기화 버튼을 누르시면 됩니다.</li> <li>각 동의/비동의 단계에 배치할 수 있는 카드의 수는 강제 정규 분포가 이루어지도록 설정되어 있으며, 선생님께서 배치하는 카드의 숫자가 보일 것 입니다.</li> </ul> <div style="margin:10px 0 14px"> <div>-4 (매우 비동의) → 2개</div> <div>-3 (비동의) → 3개</div> <div>-2 (다소 비동의) → 4개</div> <div>-1 (약간 비동의) → 6개</div> <div>0 (중립/판단 보류) → 9개</div> <div>1 (약간 동의) → 6개</div> <div>2 (다소 동의) → 4개</div> <div>3 (동의) → 3개</div> <div>4 (매우 동의) → 2개</div> </div> <div style="text-align:right"><button id="helpClose">닫기</button></div> </div></div>
+<div class="modal hidden" id="helpModal"> <div class="modal__overlay"></div> <div class="modal__content"> <h3 style="margin-top:0">Q진술문 배치 요령</h3> <ul style="line-height:1.75"> <li>각 카드의 진술은 교사의 국가수준 교육과정 해석과 관련한 교사의 인식, 태도들 담고 있습니다. 카드 배치 전 39개의 진술을 먼저 읽어주세요</li> <li>카드 진술문에 대한 선생님의 동의, 미동의 정도에 따라 카드를 옮겨주시면 됩니다.</li> <li>양 극단에 해당하는 매우 비동의, 매우 동의 하는 진술부터 배치하시고 중립(판단 보류)에 해당하는 진술을 마지막에 배치하시면 응답하기가 편리하실 것입니다.</li> <li>카드 배치를 수정하고 싶으실 경우, 옮기실 카드를 카드 풀로 옮기시면 됩니다. 처음부터 다시 진행하시고 싶으실 경우, 분포 초기화 버튼을 누르시면 됩니다.</li> <li>각 동의/비동의 단계에 배치할 수 있는 카드의 수는 강제 정규 분포가 이루어지도록 설정되어 있으며, 선생님께서 배치하는 카드의 숫자가 보일 것 입니다.</li> </ul> <div style="margin:10px 0 14px"> <div>-4 (매우 비동의) → 2개</div> <div>-3 (비동의) → 3개</div> <div>-2 (다소 비동의) → 4개</div> <div>-1 (약간 비동의) → 6개</div> <div>0 (중립/판단 보류) → 9개</div> <div>1 (약간 동의) → 6개</div> <div>2 (다소 동의) → 4개</div> <div>3 (동의) → 3개</div> <div>4 (매우 동의) → 2개</div> </div> <ul class="help-extra"><li>카드 배치를 완료한 후 반드시 제출 버튼을 눌러주세요.</li></ul>
+<div style="text-align:right"><button id="helpClose">닫기</button></div> </div></div>
 <div class="grid">
 <aside>
 <h2 style="margin:8px 0 6px;font-size:16px">카드 풀(미배치)</h2>
@@ -450,7 +638,7 @@ let cards = JSON.parse(JSON.stringify(STATEMENTS));
       const targetBucket = zone.id==='pool' ? poolList : getBucket(zone);
       if(zone.id!=='pool'){
         const col = columns.find(c=> String(c.score)===zone.dataset.score);
-        if(getBucket(zone).children.length>=col.cap){ zone.classList.add('over'); setTimeout(()=> zone.classList.remove('over'), 300); return; }
+        if(getBucket(zone).children.length>=col.cap){ zone.classList.add('over'); try{ showToast('할당된 카드 개수를 초과하였습니다.'); zone.classList.add('shake'); setTimeout(()=> zone.classList.remove('shake'), 600); }catch(e){} setTimeout(()=> zone.classList.remove('over'), 300); return; }
       }
       targetBucket.appendChild(cardEl); refreshAll(); setUniformCardSize();
     }
@@ -706,6 +894,63 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
+
+
+<script>
+// ===== V4: Enable '기타' input only when '기타' is checked =====
+document.addEventListener('DOMContentLoaded', function () {
+  const otherChk = document.querySelector('#experience-options input[value="other"]');
+  const otherInp = document.getElementById('otherExp');
+
+  function syncOther() {
+    const on = !!(otherChk && otherChk.checked);
+    if (otherInp) {
+      otherInp.disabled = !on;
+      otherInp.placeholder = on ? '직접 입력' : '기타를 선택하면 입력 가능';
+      if (!on) otherInp.value = '';
+    }
+  }
+
+  if (otherChk && otherInp) {
+    // initialize disabled state
+    syncOther();
+    // toggle on change
+    otherChk.addEventListener('change', syncOther);
+
+    // Also keep the "전혀 없음" 단독 선택 규칙 working with this:
+    const noneOption = document.querySelector('#experience-options input[value="none"]');
+    if (noneOption) {
+      noneOption.addEventListener('change', () => {
+        // If 'none' is checked, ensure other input is disabled and cleared
+        syncOther();
+      });
+    }
+  }
+});
+</script>
+
+
+<script>
+// ===== V8: Toast helper =====
+(function(){
+  function ensureToast(){
+    let t = document.getElementById('toast');
+    if (!t){
+      t = document.createElement('div');
+      t.id = 'toast';
+      document.body.appendChild(t);
+    }
+    return t;
+  }
+  window.showToast = function(msg, duration=2000){
+    const t = ensureToast();
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t.__tid);
+    t.__tid = setTimeout(()=> t.classList.remove('show'), duration);
+  };
+})();
+</script>
 
 </body>
 </html>
