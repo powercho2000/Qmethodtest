@@ -92,7 +92,8 @@
     })();
   </script>
 
-<!-- ==== Gate token guard with short polling ==== -->
+
+<!-- ==== Gate token guard (fast start + just-in-time recheck) ==== -->
 <style>
 #gate-token-block{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99999;align-items:center;justify-content:center}
 #gate-token-block .panel{background:#fff;max-width:560px;width:calc(100% - 2rem);border-radius:12px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,0.25);text-align:center;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,Apple SD Gothic Neo,Malgun Gothic,sans-serif}
@@ -118,10 +119,13 @@
   function getToken(){
     try{ var u=new URL(location.href); return u.searchParams.get("token")||""; }catch(e){ return ""; }
   }
-  function setStartEnabled(enabled){
+  function setStartEnabled(enabled, label){
     try{
       var btn = document.getElementById("startBtn") || document.querySelector("[data-role='start'], .start-btn, button.start");
-      if (btn){ btn.disabled = !enabled; btn.classList.toggle("btn-disabled", !enabled); }
+      if (!btn) return;
+      btn.disabled = !enabled;
+      btn.classList.toggle("btn-disabled", !enabled);
+      if (label) btn.textContent = label;
     }catch(_){}
   }
   function block(msg){
@@ -137,36 +141,15 @@
       });
     }catch(_){}
   }
-
-  function checkOnce(token, cb){
+  function checkStatus(token, cb){
     var url = WEB_APP_URL + "?action=checkToken&token=" + encodeURIComponent(token);
     jsonp(url, function(res){
       if (!res || res.ok === false) return cb("error");
-      return cb(res.status); // "valid" | "used" | "invalid"
+      cb(res.status); // "valid" | "used" | "invalid"
     });
   }
 
-  // Poll up to ~3 seconds to catch late writes
-  function pollStatus(token, done){
-    var attempts = 8; // 8 * 400ms ~= 3.2s
-    var delay = 400;
-    function step(){
-      checkOnce(token, function(status){
-        if (status === "used" || status === "invalid"){
-          return done(status);
-        }
-        if (status === "valid" && attempts <= 0){
-          return done("valid");
-        }
-        attempts -= 1;
-        setTimeout(step, delay);
-      });
-    }
-    step();
-  }
-
   document.addEventListener("DOMContentLoaded", function(){
-    setStartEnabled(false); // disable until checks complete
     var token = getToken();
     if (!token){
       block("토큰이 없습니다. 메일의 개인 전용 링크로 접속해 주세요.");
@@ -178,27 +161,53 @@
       window.__TOKEN_GATE_BLOCKED__ = true;
       return;
     }
-    pollStatus(token, function(status){
+
+    // Initial quick check
+    setStartEnabled(false, "검증 중…");
+    checkStatus(token, function(status){
       if (status === "invalid"){
-        block("유효하지 않은 링크입니다. 메일의 개인 전용 링크로 접속해 주세요.");
         window.__TOKEN_GATE_BLOCKED__ = true;
+        block("유효하지 않은 링크입니다. 메일의 개인 전용 링크로 접속해 주세요.");
         return;
       }
       if (status === "used"){
-        block("이미 사용된 링크입니다. 추가 응답은 불가능합니다.");
         window.__TOKEN_GATE_BLOCKED__ = true;
+        block("이미 사용된 링크입니다. 추가 응답은 불가능합니다.");
         return;
       }
-      // status === "valid"
+      // valid now -> enable immediately
       window.__TOKEN_GATE_BLOCKED__ = false;
-      setStartEnabled(true);
+      setStartEnabled(true, null);
+
+      // Just-in-time re-check on click before redirect
       try{
         var btn = document.getElementById("startBtn") || document.querySelector("[data-role='start'], .start-btn, button.start");
         if (btn){
           var orig = btn.onclick;
           btn.onclick = function(ev){
             if (window.__TOKEN_GATE_BLOCKED__) { ev.preventDefault(); return false; }
-            if (typeof orig === "function"){ return orig.call(this, ev); }
+            // temporarily disable to avoid double clicks
+            setStartEnabled(false, "최종 확인 중…");
+            checkStatus(token, function(status2){
+              if (status2 === "used" || status2 === "invalid" || status2 === "error"){
+                window.__TOKEN_GATE_BLOCKED__ = true;
+                block(status2 === "used"
+                  ? "이미 사용된 링크입니다. 추가 응답은 불가능합니다."
+                  : "유효하지 않은 링크입니다. 메일의 개인 전용 링크로 접속해 주세요.");
+                return false;
+              }
+              // still valid -> proceed with original handler
+              window.__TOKEN_GATE_BLOCKED__ = false;
+              setStartEnabled(true, null);
+              if (typeof orig === "function"){
+                return orig.call(btn, ev);
+              }
+              // if original handler relied on default <a> navigation, let it happen
+              // for safety, do nothing special here
+            });
+            // prevent immediate navigation until re-check completes
+            ev.preventDefault();
+            return false;
           };
         }
       }catch(_){}
