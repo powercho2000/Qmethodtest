@@ -20,6 +20,8 @@
     .status-ok { color:#065f46; }
     .status-bad { color:#991b1b; }
   </style>
+
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
   <div class="wrap">
@@ -28,7 +30,12 @@
       <p id="desc">개인용 링크 토큰을 확인하고 있습니다…</p>
 
       <div id="ok" class="hidden">
-        <p class="status-ok">확인되었습니다. 아래 버튼을 누르면 설문이 시작됩니다.<br/>(버튼을 누르는 즉시 1회 사용 처리됩니다)</p>
+        <p class="status-ok">확인되었습니다. 아래 <b>사람 확인</b>을 먼저 완료해 주세요.</p>
+        <div id="humanCheck"
+             class="cf-turnstile"
+             data-sitekey="0x4AAAAAAB34V_a6HHhPQT9h"
+             data-callback="onCaptchaSolved"
+             data-error-callback="onCaptchaError"></div>
         <div class="actions">
           <button id="startBtn" class="btn-primary">설문 시작하기</button>
         </div>
@@ -49,7 +56,19 @@
     const SURVEY_PAGE = "https://powercho2000.github.io/Qmethodtest/form.html";     // 설문 본문 URL
 
     const qs = new URLSearchParams(location.search);
-    const token = (qs.get('token') || '').trim();
+    const token = (qs.get('token') || '')
+    // Turnstile integration
+    let captchaToken='';
+    window.onCaptchaSolved = function(tokenFromTurnstile){
+      captchaToken = tokenFromTurnstile;
+      if (startBtn){ startBtn.disabled=false; startBtn.classList.remove('btn-disabled'); }
+    };
+    window.onCaptchaError = function(){
+      captchaToken='';
+      if (startBtn){ startBtn.disabled=true; startBtn.classList.add('btn-disabled'); }
+      alert('사람 확인 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요.');
+    };
+.trim();
 
     const elDesc    = document.getElementById('desc');
     const elOK      = document.getElementById('ok');
@@ -83,8 +102,18 @@
 
       elDesc.textContent = "확인되었습니다.";
       elOK.classList.remove('hidden');
-      startBtn.onclick = () => { 
+      // Require human check before enabling
+      startBtn.disabled = true; startBtn.classList.add('btn-disabled');
+      startBtn.onclick = async () => { 
+        if(!captchaToken){ alert('사람 확인을 먼저 완료해 주세요.'); return; }
         startBtn.disabled = true; startBtn.classList.add('btn-disabled'); startBtn.textContent = "잠시만요…";
+        // 서버에서 캡차 토큰 재검증
+        const vr = await jsonp(WEB_APP_URL + `?action=verifyCaptcha&captcha=${encodeURIComponent(captchaToken)}`);
+        if(!vr || vr.ok !== true){
+          alert('사람 확인 검증에 실패했습니다. 다시 시도해 주세요.');
+          startBtn.disabled = false; startBtn.classList.remove('btn-disabled'); startBtn.textContent = "설문 시작하기";
+          return;
+        }
         const url = new URL(SURVEY_PAGE);
         url.searchParams.set('token', token);
         setTimeout(() => { location.href = url.toString(); }, 50);
