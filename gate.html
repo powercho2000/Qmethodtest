@@ -85,7 +85,6 @@
       elOK.classList.remove('hidden');
       startBtn.onclick = () => { 
         startBtn.disabled = true; startBtn.classList.add('btn-disabled'); startBtn.textContent = "잠시만요…";
-        // markUsed를 '발사 후 잊기'로 호출하고, 즉시 이동
         const url = new URL(SURVEY_PAGE);
         url.searchParams.set('token', token);
         setTimeout(() => { location.href = url.toString(); }, 50);
@@ -93,7 +92,7 @@
     })();
   </script>
 
-<!-- ==== Gate token guard (block used/invalid) ==== -->
+<!-- ==== Gate token guard with short polling ==== -->
 <style>
 #gate-token-block{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99999;align-items:center;justify-content:center}
 #gate-token-block .panel{background:#fff;max-width:560px;width:calc(100% - 2rem);border-radius:12px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,0.25);text-align:center;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,Apple SD Gothic Neo,Malgun Gothic,sans-serif}
@@ -119,15 +118,18 @@
   function getToken(){
     try{ var u=new URL(location.href); return u.searchParams.get("token")||""; }catch(e){ return ""; }
   }
+  function setStartEnabled(enabled){
+    try{
+      var btn = document.getElementById("startBtn") || document.querySelector("[data-role='start'], .start-btn, button.start");
+      if (btn){ btn.disabled = !enabled; btn.classList.toggle("btn-disabled", !enabled); }
+    }catch(_){}
+  }
   function block(msg){
     var ov=document.getElementById("gate-token-block");
     var p=document.getElementById("gate-token-msg");
     if (p && msg) p.textContent = msg;
     if (ov){ ov.style.display="flex"; }
-    try{
-      var btn = document.getElementById("startBtn") || document.querySelector("[data-role='start'], .start-btn, button.start");
-      if (btn){ btn.disabled = true; btn.classList.add("btn-disabled"); }
-    }catch(_){}
+    setStartEnabled(false);
     try{
       document.querySelectorAll("a,button,input,select,textarea").forEach(function(el){
         if (el.tagName==="A"){ el.href="javascript:void(0)"; el.onclick=function(e){e.preventDefault();}; }
@@ -135,14 +137,36 @@
       });
     }catch(_){}
   }
-  function allow(){
-    try{
-      var btn = document.getElementById("startBtn") || document.querySelector("[data-role='start'], .start-btn, button.start");
-      if (btn){ btn.disabled = false; btn.classList.remove("btn-disabled"); }
-    }catch(_){}
+
+  function checkOnce(token, cb){
+    var url = WEB_APP_URL + "?action=checkToken&token=" + encodeURIComponent(token);
+    jsonp(url, function(res){
+      if (!res || res.ok === false) return cb("error");
+      return cb(res.status); // "valid" | "used" | "invalid"
+    });
+  }
+
+  // Poll up to ~3 seconds to catch late writes
+  function pollStatus(token, done){
+    var attempts = 8; // 8 * 400ms ~= 3.2s
+    var delay = 400;
+    function step(){
+      checkOnce(token, function(status){
+        if (status === "used" || status === "invalid"){
+          return done(status);
+        }
+        if (status === "valid" && attempts <= 0){
+          return done("valid");
+        }
+        attempts -= 1;
+        setTimeout(step, delay);
+      });
+    }
+    step();
   }
 
   document.addEventListener("DOMContentLoaded", function(){
+    setStartEnabled(false); // disable until checks complete
     var token = getToken();
     if (!token){
       block("토큰이 없습니다. 메일의 개인 전용 링크로 접속해 주세요.");
@@ -154,37 +178,30 @@
       window.__TOKEN_GATE_BLOCKED__ = true;
       return;
     }
-    var url = WEB_APP_URL + "?action=checkToken&token=" + encodeURIComponent(token);
-    jsonp(url, function(res){
-      try{
-        if (!res || res.ok === false || res.status === "invalid"){
-          block("유효하지 않은 링크입니다. 메일의 개인 전용 링크로 접속해 주세요.");
-          window.__TOKEN_GATE_BLOCKED__ = true;
-          return;
-        }
-        if (res.status === "used"){
-          block("이미 사용된 링크입니다. 추가 응답은 불가능합니다.");
-          window.__TOKEN_GATE_BLOCKED__ = true;
-          return;
-        }
-        // valid
-        window.__TOKEN_GATE_BLOCKED__ = false;
-        allow();
-        // guard click from bypass
-        try{
-          var btn = document.getElementById("startBtn") || document.querySelector("[data-role='start'], .start-btn, button.start");
-          if (btn){
-            var orig = btn.onclick;
-            btn.onclick = function(ev){
-              if (window.__TOKEN_GATE_BLOCKED__) { ev.preventDefault(); return false; }
-              if (typeof orig === "function"){ return orig.call(this, ev); }
-            };
-          }
-        }catch(_){}
-      }catch(_){
-        block("시스템 오류로 진행할 수 없습니다. 잠시 후 다시 시도해 주세요.");
+    pollStatus(token, function(status){
+      if (status === "invalid"){
+        block("유효하지 않은 링크입니다. 메일의 개인 전용 링크로 접속해 주세요.");
         window.__TOKEN_GATE_BLOCKED__ = true;
+        return;
       }
+      if (status === "used"){
+        block("이미 사용된 링크입니다. 추가 응답은 불가능합니다.");
+        window.__TOKEN_GATE_BLOCKED__ = true;
+        return;
+      }
+      // status === "valid"
+      window.__TOKEN_GATE_BLOCKED__ = false;
+      setStartEnabled(true);
+      try{
+        var btn = document.getElementById("startBtn") || document.querySelector("[data-role='start'], .start-btn, button.start");
+        if (btn){
+          var orig = btn.onclick;
+          btn.onclick = function(ev){
+            if (window.__TOKEN_GATE_BLOCKED__) { ev.preventDefault(); return false; }
+            if (typeof orig === "function"){ return orig.call(this, ev); }
+          };
+        }
+      }catch(_){}
     });
   });
 })();
