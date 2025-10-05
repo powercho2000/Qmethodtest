@@ -17,13 +17,32 @@
     button { padding:12px 16px; border-radius:10px; border:0; font-size:16px; cursor:pointer; }
     .btn-primary { background:#111827; color:white; }
     .btn-disabled { background:#9ca3af; color:white; cursor:not-allowed; }
+
+    /* --- modal (마감 안내 팝업) --- */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.45);
+      display: none; z-index: 50;
+    }
+    .overlay.show { display: block; }
+    .modal {
+      position: fixed; inset: 0; display: none; z-index: 60;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal.show { display: flex; }
+    .modal-card {
+      width: 100%; max-width: 560px; background: #fff; border-radius: 16px;
+      border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,.15);
+      padding: 28px;
+    }
+    .modal-title { margin: 0 0 8px; font-size: 20px; font-weight: 700; color: #111827; }
+    .modal-desc  { margin: 4px 0 0; line-height: 1.6; color:#374151; }
   </style>
 
-  <!-- Turnstile script -->
+  <!-- Turnstile script (유지되지만 마감 상태에서는 사용되지 않습니다) -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
-  <div class="wrap">
+  <div class="wrap" aria-hidden="false">
     <div class="card">
       <h1>설문 접근 확인</h1>
       <p id="desc">개인용 링크 토큰을 확인하고 있습니다…</p>
@@ -56,10 +75,25 @@
     </div>
   </div>
 
+  <!-- 마감 안내 모달 -->
+  <div id="overlay" class="overlay" aria-hidden="true"></div>
+  <div id="closedModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="closedTitle" aria-describedby="closedDesc">
+    <div class="modal-card">
+      <h2 id="closedTitle" class="modal-title">설문 기한이 종료되었습니다</h2>
+      <p id="closedDesc" class="modal-desc">
+        설문에 관심을 보여주신 선생님들께 깊은 감사의 마음을 전합니다.<br/>
+        배명고 조경철 드림
+      </p>
+    </div>
+  </div>
+
   <script>
     // ======= 환경 설정 =======
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzib4p0Bj5mk9gAhReiHCOuPQXRE_9nq_1xaFS7VBKa_ErDc9lQ32SJtVyvhOakm6RY/exec"; // 새 exec URL
     const SURVEY_PAGE = "https://powercho2000.github.io/Qmethodtest/form.html";
+
+    // 🔒 설문 마감 스위치: 마감 시 true 로 설정
+    const SURVEY_CLOSED = true;
 
     // ======= JSONP with timeout =======
     function jsonp(url){
@@ -82,9 +116,12 @@
     const elDesc    = document.getElementById('desc');
     const startBtn  = document.getElementById('startBtn');
 
+    const overlay   = document.getElementById('overlay');
+    const closedModal = document.getElementById('closedModal');
+
     let captchaToken='';
 
-    // Turnstile callbacks
+    // Turnstile callbacks (마감 상태에서는 호출되지 않음)
     window.onCaptchaSolved = function(tokenFromTurnstile){
       captchaToken = tokenFromTurnstile;
       if (startBtn){
@@ -101,8 +138,35 @@
       alert('사람 확인 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요.');
     };
 
+    // ======= 마감 표시 =======
+    function showClosedModal(){
+      // 배경 콘텐츠 포커스 방지
+      document.querySelector('.wrap')?.setAttribute('aria-hidden', 'true');
+      overlay.classList.add('show');
+      closedModal.classList.add('show');
+
+      // 키보드 접근 차단 (간단 처리)
+      document.addEventListener('keydown', (e)=> {
+        if (e.key === 'Tab') { e.preventDefault(); }
+      }, { capture: true });
+    }
+
     // ======= 초기화 =======
     (async function init(){
+      // 설문 마감이면 즉시 팝업만 보여 주고 나머지 동작 차단
+      if (SURVEY_CLOSED) {
+        showClosedModal();
+        // 화면의 다른 상태 안내도 "마감"으로 변경
+        elDesc.textContent = "설문이 마감되었습니다.";
+        // 혹시 버튼이 보일 상황을 대비해 강제 비활성화
+        if (startBtn){
+          startBtn.disabled = true;
+          startBtn.classList.add('btn-disabled');
+        }
+        return; // 여기서 완전 종료 (토큰 검증/캡차/이동 모두 차단)
+      }
+
+      // === 이하 로직은 '마감이 아닐 때'만 동작 ===
       const params = new URLSearchParams(location.search);
       const token = params.get('token');
       if (!token){
